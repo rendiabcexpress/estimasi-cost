@@ -18,9 +18,9 @@ export function MobileStickyBar({
   } = computed;
 
   const statusColor =
-    marginStatus === 'ok' ? '#27AE60' : marginStatus === 'warning' ? '#F39C12' : '#E74C3C';
+    marginStatus === 'ok' ? '#16A34A' : marginStatus === 'warning' ? '#D97706' : '#DC2626';
   const statusBg =
-    marginStatus === 'ok' ? '#E8F8EF' : marginStatus === 'warning' ? '#FEF6E7' : '#FDECEA';
+    marginStatus === 'ok' ? '#DCFCE7' : marginStatus === 'warning' ? '#FEF3C7' : '#FEE2E2';
   const statusIcon = marginStatus === 'ok' ? '✅' : marginStatus === 'warning' ? '⚠️' : '🔴';
 
   const route =
@@ -66,12 +66,12 @@ export function MobileStickyBar({
 
       {/* 4 metric cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 6 }}>
-        <MetricCard label="Revenue" value={formatRp(totalRevenue, true)} color="#27AE60" bg="#E8F8EF" />
+        <MetricCard label="Revenue" value={formatRp(totalRevenue, true)} color="#16A34A" bg="#DCFCE7" />
         <MetricCard
           label="Cost"
           value={formatRp(totalCost, true)}
-          color={totalCost > totalRevenue ? '#E74C3C' : 'var(--text)'}
-          bg={totalCost > totalRevenue ? '#FDECEA' : 'var(--card-inner)'}
+          color={totalCost > totalRevenue ? '#DC2626' : 'var(--text)'}
+          bg={totalCost > totalRevenue ? '#FEE2E2' : 'var(--card-inner)'}
         />
         <MetricCard
           label="Margin"

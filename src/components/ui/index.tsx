@@ -242,7 +242,7 @@ export function AutoField({
       <div
         style={{
           background: highlight ? 'var(--primary-light)' : 'var(--card-inner)',
-          border: `1.5px solid ${highlight ? 'rgba(91,103,202,0.3)' : 'var(--border)'}`,
+          border: `1.5px solid ${highlight ? 'rgba(37,99,235,0.3)' : 'var(--border)'}`,
           borderRadius: 'var(--radius-sm)',
           padding: '0 10px',
           height: 40,
@@ -366,7 +366,7 @@ export function SegmentedControl<T extends string>({
               fontWeight: active ? 700 : 500,
               fontSize: 13,
               cursor: 'pointer',
-              boxShadow: active ? '0 1px 4px rgba(91,103,202,0.15)' : 'none',
+              boxShadow: active ? '0 1px 4px rgba(37,99,235,0.15)' : 'none',
               transition: 'all 0.15s',
             }}
           >

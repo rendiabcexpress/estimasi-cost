@@ -258,9 +258,9 @@ function InfoPage() {
 
       <InfoCard title="🎨 Kode Warna">
         {[
-          { color: '#27AE60', bg: '#E8F8EF', label: `Hijau — Margin ≥ ${TARGET_MARGIN}%`, desc: 'Target tercapai, harga aman untuk deal' },
-          { color: '#F39C12', bg: '#FEF6E7', label: `Oranye — Margin 0–${TARGET_MARGIN - 1}%`, desc: 'Belum ideal, pertimbangkan negosiasi cost atau naikkan tarif' },
-          { color: '#E74C3C', bg: '#FDECEA', label: 'Merah — Margin Negatif (Rugi)', desc: 'Biaya melebihi revenue, jangan accept tanpa penyesuaian' },
+          { color: '#16A34A', bg: '#DCFCE7', label: `Hijau — Margin ≥ ${TARGET_MARGIN}%`, desc: 'Target tercapai, harga aman untuk deal' },
+          { color: '#D97706', bg: '#FEF3C7', label: `Kuning — Margin 0–${TARGET_MARGIN - 1}%`, desc: 'Belum ideal, pertimbangkan negosiasi cost atau naikkan tarif' },
+          { color: '#DC2626', bg: '#FEE2E2', label: 'Merah — Margin Negatif (Rugi)', desc: 'Biaya melebihi revenue, jangan accept tanpa penyesuaian' },
         ].map((item) => (
           <div key={item.label} style={{ display: 'flex', gap: 12, padding: '10px 14px', borderRadius: 8, background: item.bg, border: `1px solid ${item.color}40`, marginBottom: 8 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: item.color, marginTop: 3, flexShrink: 0 }} />

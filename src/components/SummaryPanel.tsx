@@ -17,9 +17,9 @@ export function SummaryPanel({
   } = computed;
 
   const statusColor =
-    marginStatus === 'ok' ? '#27AE60' : marginStatus === 'warning' ? '#F39C12' : '#E74C3C';
+    marginStatus === 'ok' ? '#16A34A' : marginStatus === 'warning' ? '#D97706' : '#DC2626';
   const statusBg =
-    marginStatus === 'ok' ? '#E8F8EF' : marginStatus === 'warning' ? '#FEF6E7' : '#FDECEA';
+    marginStatus === 'ok' ? '#DCFCE7' : marginStatus === 'warning' ? '#FEF3C7' : '#FEE2E2';
   const statusIcon = marginStatus === 'ok' ? '✅' : marginStatus === 'warning' ? '⚠️' : '🔴';
 
   const route =
@@ -139,11 +139,11 @@ export function SummaryPanel({
         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>
           Biaya per Leg
         </div>
-        <LegBar label="First Mile" amount={subtotalFirstMile} total={totalCost} color="#3B82F6" />
-        <LegBar label="Middle Mile" amount={subtotalMiddleMile} total={totalCost} color="#8B5CF6" />
-        <LegBar label="Last Mile" amount={subtotalLastMile} total={totalCost} color="#10B981" />
+        <LegBar label="First Mile" amount={subtotalFirstMile} total={totalCost} color="#2563EB" />
+        <LegBar label="Middle Mile" amount={subtotalMiddleMile} total={totalCost} color="#7C3AED" />
+        <LegBar label="Last Mile" amount={subtotalLastMile} total={totalCost} color="#16A34A" />
         {totalExtraCost > 0 && (
-          <LegBar label="Biaya Tambahan" amount={totalExtraCost} total={totalCost} color="#F39C12" />
+          <LegBar label="Biaya Tambahan" amount={totalExtraCost} total={totalCost} color="#D97706" />
         )}
       </div>
     </div>
@@ -161,7 +161,7 @@ function Chip({ children, primary }: { children: React.ReactNode; primary?: bool
         color: primary ? 'var(--primary)' : 'var(--text-secondary)',
         fontSize: 11,
         fontWeight: 600,
-        border: `1px solid ${primary ? 'rgba(91,103,202,0.3)' : 'var(--border)'}`,
+        border: `1px solid ${primary ? 'rgba(37,99,235,0.3)' : 'var(--border)'}`,
       }}
     >
       {children}
