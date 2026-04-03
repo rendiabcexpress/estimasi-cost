@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "EstCost",
+    "slug": "estcost",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#5B67CA"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.abcexpress.estcost"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#5B67CA"
+      },
+      "package": "com.abcexpress.estcost"
+    },
+    "web": {
+      "favicon": "./assets/icon.png"
+    }
+  }
+}

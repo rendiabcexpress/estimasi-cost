@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/laragon/www/**)",
+      "Bash(npm --version)",
+      "Bash(npx expo:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\laragon\\www\\estCost\\src"
+    ]
+  }
+}
