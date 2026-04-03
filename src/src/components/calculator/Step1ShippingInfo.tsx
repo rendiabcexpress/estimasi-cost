@@ -152,7 +152,7 @@ export function Step1ShippingInfo({
       <SectionHeader icon="📦" title="Informasi Pengiriman" />
 
       {/* Asal & Tujuan — searchable, dari tabel city antero_new */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+      <div style={{ display: 'grid', gap: 12, marginBottom: 12 }} className="card-grid-2">
         <CitySelect
           label="Asal"
           value={{ id: info.asalKotaId, name: info.asalKotaName }}

@@ -39,66 +39,63 @@ export default function App() {
           style={{
             maxWidth: 1280,
             margin: '0 auto',
-            padding: '0 24px',
-            height: 60,
+            padding: isMobile ? '0 12px' : '0 24px',
+            height: 56,
             display: 'flex',
             alignItems: 'center',
-            gap: 24,
+            gap: isMobile ? 8 : 24,
           }}
         >
           {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <div
               style={{
-                width: 34,
-                height: 34,
-                borderRadius: 10,
+                width: 32,
+                height: 32,
+                borderRadius: 9,
                 background: 'var(--primary)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 18,
+                fontSize: 16,
               }}
             >
               📊
             </div>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--text)', lineHeight: 1.2 }}>
-                EstCost
-              </div>
-              <div style={{ fontSize: 10, color: 'var(--text-secondary)' }}>
-                Kalkulator Estimasi Margin
-              </div>
+            <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--text)', lineHeight: 1 }}>
+              EstCost
             </div>
           </div>
 
           {/* Tabs */}
-          <nav style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
+          <nav style={{ display: 'flex', gap: 2 }}>
             {(['kalkulator', 'info'] as Tab[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
                 style={{
-                  padding: '6px 18px',
+                  padding: isMobile ? '6px 10px' : '6px 16px',
                   borderRadius: 'var(--radius-sm)',
                   border: 'none',
                   background: tab === t ? 'var(--primary-light)' : 'transparent',
                   color: tab === t ? 'var(--primary)' : 'var(--text-secondary)',
                   fontWeight: tab === t ? 700 : 500,
-                  fontSize: 13,
+                  fontSize: isMobile ? 12 : 13,
                   cursor: 'pointer',
-                  textTransform: 'capitalize',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                {t === 'kalkulator' ? '📊 Kalkulator' : 'ℹ️ Panduan'}
+                {t === 'kalkulator'
+                  ? (isMobile ? '📊' : '📊 Kalkulator')
+                  : (isMobile ? 'ℹ️' : 'ℹ️ Panduan')}
               </button>
             ))}
           </nav>
 
           <div style={{ flex: 1 }} />
 
-          {/* Route badge */}
-          {calc.state.shippingInfo.asalKotaName && calc.state.shippingInfo.tujuanKotaName && (
+          {/* Route badge — desktop only */}
+          {!isMobile && calc.state.shippingInfo.asalKotaName && calc.state.shippingInfo.tujuanKotaName && (
             <div
               style={{
                 padding: '4px 14px',
@@ -120,18 +117,19 @@ export default function App() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
-                padding: '6px 14px',
+                gap: 4,
+                padding: isMobile ? '6px 10px' : '6px 14px',
                 borderRadius: 'var(--radius-full)',
                 border: '1px solid rgba(231,76,60,0.3)',
                 background: 'var(--danger-light)',
                 color: 'var(--danger)',
                 fontWeight: 600,
-                fontSize: 13,
+                fontSize: isMobile ? 12 : 13,
                 cursor: 'pointer',
+                whiteSpace: 'nowrap',
               }}
             >
-              ↺ Reset
+              ↺ {isMobile ? '' : 'Reset'}
             </button>
           )}
         </div>
@@ -140,7 +138,7 @@ export default function App() {
       {/* Main content */}
       {tab === 'kalkulator' ? (
         <main
-          style={{ maxWidth: 1280, margin: '0 auto', padding: '24px' }}
+          style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '12px' : '24px' }}
           className="layout-grid"
         >
           {/* Left column — all steps */}

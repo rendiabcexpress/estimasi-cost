@@ -211,7 +211,7 @@ export function Step2ItemDetails({
         </>
       ) : (
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 12 }}>
+          <div style={{ display: 'grid', gap: 12, marginBottom: 12 }} className="card-grid-3">
             <NumberInput
               label="Total Koli"
               value={directInput.koli}
@@ -231,7 +231,7 @@ export function Step2ItemDetails({
               placeholder="0"
             />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gap: 12 }} className="card-grid-3">
             <NumberInput
               label="Chargeable Weight (kg) ★"
               value={directInput.chargeableWeight}

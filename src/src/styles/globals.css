@@ -70,6 +70,14 @@ button {
 }
 
 /* Responsive grid helpers */
+.card-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.card-grid-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 .layout-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -95,6 +103,15 @@ button {
   /* Full width card di mobile */
   .card-grid-2 {
     grid-template-columns: 1fr !important;
+  }
+
+  .card-grid-3 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Kurangi padding card di mobile */
+  .mobile-pad {
+    padding: 16px !important;
   }
 }
 
