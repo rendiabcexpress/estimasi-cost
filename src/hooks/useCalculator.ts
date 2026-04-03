@@ -11,10 +11,14 @@ import { computeAll, genId } from '../utils/calculations';
 
 const DEFAULT_STATE: CalculatorState = {
   shippingInfo: {
-    asal: '',
-    tujuan: '',
+    asalKotaId: null,
+    asalKotaName: '',
+    tujuanKotaId: null,
+    tujuanKotaName: '',
     deskripsi: '',
-    produkId: 1,
+    produkId: null,
+    produkName: '',
+    volumeDivider: 5000,
   },
   inputMode: 'dimensi',
   items: [

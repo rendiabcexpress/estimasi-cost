@@ -23,8 +23,8 @@ export function SummaryPanel({
   const statusIcon = marginStatus === 'ok' ? '✅' : marginStatus === 'warning' ? '⚠️' : '🔴';
 
   const route =
-    shippingInfo.asal && shippingInfo.tujuan
-      ? `${shippingInfo.asal} → ${shippingInfo.tujuan}`
+    shippingInfo.asalKotaName && shippingInfo.tujuanKotaName
+      ? `${shippingInfo.asalKotaName} → ${shippingInfo.tujuanKotaName}`
       : 'Belum ada route';
 
   const statusMsg =

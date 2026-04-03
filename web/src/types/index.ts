@@ -42,10 +42,16 @@ export interface Leg {
 }
 
 export interface ShippingInfo {
-  asal: string;
-  tujuan: string;
+  // Field sesuai tabel city antero_new
+  asalKotaId: number | null;    // city.id
+  asalKotaName: string;         // city.name (untuk display)
+  tujuanKotaId: number | null;  // city.id
+  tujuanKotaName: string;       // city.name (untuk display)
   deskripsi: string;
-  produkId: number;
+  // Field sesuai tabel produk antero_new
+  produkId: number | null;
+  produkName: string;           // produk.produk
+  volumeDivider: number;        // produk.volume_divider (4000 atau 5000)
 }
 
 export interface Tariff {
@@ -91,9 +97,18 @@ export interface ComputedValues {
   costReductionFor40: number;
 }
 
+// Sesuai dengan tabel produk di antero_new
 export interface Produk {
   id: number;
-  nama: string;
-  volumeDivider: number;
-  jenisAngkutan: string;
+  produk: string;        // nama produk (field: produk.produk)
+  volume_type: string;   // kode moda: '9'=Ground, '15'=Air, '16'=Global, '20'=Sea
+  volume_divider: number; // 4000 atau 5000
+  status: number | null;
+}
+
+// Sesuai dengan tabel city di antero_new
+export interface City {
+  id: number;
+  name: string;
+  province_name?: string;
 }

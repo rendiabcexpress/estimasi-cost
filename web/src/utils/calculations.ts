@@ -6,7 +6,7 @@ import {
   CalculatorState,
   MarginStatus,
 } from '../types';
-import { TARGET_MARGIN, PRODUK_LIST } from '../data/masterdata';
+import { TARGET_MARGIN } from '../data/masterdata';
 
 // --- Per baris dimensi ---
 
@@ -50,8 +50,8 @@ export function getMarginStatus(marginPct: number): MarginStatus {
 // --- Semua computed values ---
 
 export function computeAll(state: CalculatorState): ComputedValues {
-  const produk = PRODUK_LIST.find((p) => p.id === state.shippingInfo.produkId) ?? PRODUK_LIST[0];
-  const volumeDivider = produk.volumeDivider;
+  // volume_divider diambil dari produk yang dipilih (sudah difetch dari DB antero_new)
+  const volumeDivider = state.shippingInfo.volumeDivider ?? 5000;
 
   // 1. Hitung per baris dimensi
   const itemsCalculated = state.items.map((item) => calcRow(item, volumeDivider));

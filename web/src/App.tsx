@@ -95,7 +95,7 @@ export default function App() {
           <div style={{ flex: 1 }} />
 
           {/* Route badge */}
-          {calc.state.shippingInfo.asal && calc.state.shippingInfo.tujuan && (
+          {calc.state.shippingInfo.asalKotaName && calc.state.shippingInfo.tujuanKotaName && (
             <div
               style={{
                 padding: '4px 14px',
@@ -106,7 +106,7 @@ export default function App() {
                 fontWeight: 700,
               }}
             >
-              {calc.state.shippingInfo.asal} → {calc.state.shippingInfo.tujuan}
+              {calc.state.shippingInfo.asalKotaName} → {calc.state.shippingInfo.tujuanKotaName}
             </div>
           )}
 
@@ -208,9 +208,14 @@ export default function App() {
 }
 
 // ─── Info Page ────────────────────────────────────────────────────────────────
-import { PRODUK_LIST, TARGET_MARGIN } from './data/masterdata';
+import { TARGET_MARGIN, VOLUME_TYPE_LABEL } from './data/masterdata';
+import { Produk } from './types';
 
 function InfoPage() {
+  const [produkList, setProdukList] = React.useState<Produk[]>([]);
+  React.useEffect(() => {
+    import('./services/api').then(({ fetchProduk }) => fetchProduk().then(setProdukList));
+  }, []);
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '24px' }}>
       <InfoCard title="📖 Cara Pakai">
@@ -276,12 +281,12 @@ function InfoPage() {
             </tr>
           </thead>
           <tbody>
-            {PRODUK_LIST.map((p) => (
+            {produkList.map((p) => (
               <tr key={p.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: '8px 12px', fontWeight: 600 }}>{p.nama}</td>
-                <td style={{ padding: '8px 12px', color: 'var(--text-secondary)' }}>{p.jenisAngkutan}</td>
+                <td style={{ padding: '8px 12px', fontWeight: 600 }}>{p.produk}</td>
+                <td style={{ padding: '8px 12px', color: 'var(--text-secondary)' }}>{VOLUME_TYPE_LABEL[p.volume_type] ?? p.volume_type}</td>
                 <td style={{ padding: '8px 12px', color: 'var(--primary)', fontWeight: 700, fontFamily: 'monospace' }}>
-                  {p.volumeDivider.toLocaleString('id-ID')} cm³/kg
+                  {p.volume_divider.toLocaleString('id-ID')} cm³/kg
                 </td>
               </tr>
             ))}

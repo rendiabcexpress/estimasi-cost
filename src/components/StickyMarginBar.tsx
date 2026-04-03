@@ -36,8 +36,8 @@ export function StickyMarginBar({ computed, shippingInfo }: Props) {
       : colors.dangerLight;
 
   const routeLabel =
-    shippingInfo.asal && shippingInfo.tujuan
-      ? `${shippingInfo.asal} → ${shippingInfo.tujuan}`
+    shippingInfo.asalKotaName && shippingInfo.tujuanKotaName
+      ? `${shippingInfo.asalKotaName} → ${shippingInfo.tujuanKotaName}`
       : 'Belum ada route';
 
   const statusMsg =
