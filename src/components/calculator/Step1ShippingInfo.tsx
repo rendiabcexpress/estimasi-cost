@@ -127,6 +127,121 @@ function CitySelect({
   );
 }
 
+// ─── Produk Dropdown ─────────────────────────────────────────────────────────
+
+function ProdukSelect({
+  produkList,
+  loading,
+  value,
+  onChange,
+}: {
+  produkList: Produk[];
+  loading: boolean;
+  value: { id: number | null; name: string };
+  onChange: (p: Produk) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const selected = produkList.find((p) => p.id === value.id);
+
+  const modeIcon: Record<string, string> = {
+    '9': '🚛', '15': '✈️', '16': '🌐', '20': '🚢',
+  };
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <div
+        onClick={() => !loading && setOpen((o) => !o)}
+        style={{
+          width: '100%', height: 40,
+          border: `1.5px solid ${open ? 'var(--primary)' : 'var(--border)'}`,
+          borderRadius: 'var(--radius-sm)',
+          padding: '0 36px 0 12px',
+          background: 'white',
+          fontSize: 14,
+          color: selected ? 'var(--text)' : 'var(--text-muted)',
+          cursor: loading ? 'not-allowed' : 'pointer',
+          display: 'flex', alignItems: 'center', gap: 8,
+          userSelect: 'none',
+          boxSizing: 'border-box',
+          position: 'relative',
+        }}
+      >
+        {loading ? (
+          <span style={{ color: 'var(--text-muted)' }}>Memuat...</span>
+        ) : selected ? (
+          <>
+            <span>{modeIcon[selected.volume_type] ?? '📦'}</span>
+            <span style={{ fontWeight: 600 }}>{selected.produk}</span>
+            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+              — {VOLUME_TYPE_LABEL[selected.volume_type] ?? selected.volume_type}
+            </span>
+          </>
+        ) : (
+          <span>Pilih produk...</span>
+        )}
+        {/* chevron */}
+        <svg
+          style={{ position: 'absolute', right: 10, top: '50%', transform: `translateY(-50%) rotate(${open ? 180 : 0}deg)`, transition: 'transform 0.15s' }}
+          width="12" height="12" viewBox="0 0 12 12"
+        >
+          <path fill="var(--text-secondary)" d="M6 8L1 3h10z" />
+        </svg>
+      </div>
+
+      {open && !loading && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0,
+          background: 'white',
+          border: '1.5px solid var(--border)',
+          borderRadius: 'var(--radius-md)',
+          boxShadow: '0 8px 24px rgba(26,29,58,0.14)',
+          zIndex: 200,
+          overflow: 'hidden',
+        }}>
+          {produkList.map((p) => {
+            const isSelected = p.id === value.id;
+            return (
+              <div
+                key={p.id}
+                onMouseDown={() => { onChange(p); setOpen(false); }}
+                style={{
+                  padding: '10px 14px',
+                  cursor: 'pointer',
+                  background: isSelected ? 'var(--primary-light)' : 'white',
+                  borderBottom: '1px solid var(--border)',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                }}
+                onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--bg)'; }}
+                onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'white'; }}
+              >
+                <span style={{ fontSize: 18 }}>{modeIcon[p.volume_type] ?? '📦'}</span>
+                <div>
+                  <div style={{ fontWeight: isSelected ? 700 : 500, color: isSelected ? 'var(--primary)' : 'var(--text)', fontSize: 14 }}>
+                    {p.produk}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 1 }}>
+                    {VOLUME_TYPE_LABEL[p.volume_type] ?? p.volume_type} · ÷{p.volume_divider.toLocaleString('id-ID')} cm³/kg
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Step 1 ───────────────────────────────────────────────────────────────────
 
 export function Step1ShippingInfo({
@@ -180,30 +295,12 @@ export function Step1ShippingInfo({
         <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>
           Produk / Moda Angkutan
         </div>
-        <select
-          value={info.produkId ?? ''}
-          onChange={(e) => {
-            const p = produkList.find((x) => x.id === Number(e.target.value));
-            if (p) onChange({ produkId: p.id, produkName: p.produk, volumeDivider: p.volume_divider });
-          }}
-          disabled={loadingProduk}
-          style={{
-            width: '100%', height: 40,
-            border: '1.5px solid var(--border)', borderRadius: 'var(--radius-sm)',
-            padding: '0 10px', background: 'white', fontSize: 14,
-            color: info.produkId ? 'var(--text)' : 'var(--text-muted)',
-            cursor: 'pointer', appearance: 'none',
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238890B5' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
-            backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', paddingRight: 30,
-          }}
-        >
-          <option value="" disabled>{loadingProduk ? 'Memuat...' : 'Pilih produk...'}</option>
-          {produkList.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.produk} — {VOLUME_TYPE_LABEL[p.volume_type] ?? p.volume_type} (÷{p.volume_divider.toLocaleString('id-ID')})
-            </option>
-          ))}
-        </select>
+        <ProdukSelect
+          produkList={produkList}
+          loading={loadingProduk}
+          value={{ id: info.produkId, name: info.produkName }}
+          onChange={(p) => onChange({ produkId: p.id, produkName: p.produk, volumeDivider: p.volume_divider })}
+        />
       </div>
 
       {selectedProduk && (
