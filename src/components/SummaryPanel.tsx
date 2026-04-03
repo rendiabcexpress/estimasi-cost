@@ -38,7 +38,9 @@ export function SummaryPanel({
     <div
       style={{
         position: 'sticky',
-        top: 16,
+        top: 76,
+        maxHeight: 'calc(100vh - 92px)',
+        overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         gap: 10,

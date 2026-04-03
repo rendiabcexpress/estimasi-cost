@@ -190,7 +190,7 @@ export default function App() {
           </div>
 
           {/* Right column — sticky summary (desktop only) */}
-          <aside className="desktop-only">
+          <aside className="desktop-only" style={{ alignSelf: 'stretch' }}>
             <SummaryPanel computed={calc.computed} shippingInfo={calc.state.shippingInfo} />
           </aside>
 
