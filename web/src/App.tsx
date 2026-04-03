@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCalculator } from './hooks/useCalculator';
+import { useIsMobile } from './hooks/useMediaQuery';
 import { Step1ShippingInfo } from './components/calculator/Step1ShippingInfo';
 import { Step2ItemDetails } from './components/calculator/Step2ItemDetails';
 import { Step3SalesTariff } from './components/calculator/Step3SalesTariff';
@@ -7,12 +8,14 @@ import { Step4OpsCosts } from './components/calculator/Step4OpsCosts';
 import { Step5ExtraCosts } from './components/calculator/Step5ExtraCosts';
 import { Step6Breakdown } from './components/calculator/Step6Breakdown';
 import { SummaryPanel } from './components/SummaryPanel';
+import { MobileStickyBar } from './components/MobileStickyBar';
 
 type Tab = 'kalkulator' | 'info';
 
 export default function App() {
   const calc = useCalculator();
   const [tab, setTab] = useState<Tab>('kalkulator');
+  const isMobile = useIsMobile();
 
   const handleReset = () => {
     if (window.confirm('Hapus semua data dan mulai dari awal?')) {
@@ -137,18 +140,11 @@ export default function App() {
       {/* Main content */}
       {tab === 'kalkulator' ? (
         <main
-          style={{
-            maxWidth: 1280,
-            margin: '0 auto',
-            padding: '24px',
-            display: 'grid',
-            gridTemplateColumns: '1fr 340px',
-            gap: 24,
-            alignItems: 'start',
-          }}
+          style={{ maxWidth: 1280, margin: '0 auto', padding: '24px' }}
+          className="layout-grid"
         >
           {/* Left column — all steps */}
-          <div>
+          <div className={isMobile ? 'mobile-scroll-pad' : undefined}>
             <Step1ShippingInfo
               info={calc.state.shippingInfo}
               onChange={calc.setShippingInfo}
@@ -195,10 +191,17 @@ export default function App() {
             <Step6Breakdown computed={calc.computed} state={calc.state} />
           </div>
 
-          {/* Right column — sticky summary */}
-          <aside>
+          {/* Right column — sticky summary (desktop only) */}
+          <aside className="desktop-only">
             <SummaryPanel computed={calc.computed} shippingInfo={calc.state.shippingInfo} />
           </aside>
+
+          {/* Mobile sticky bar */}
+          <MobileStickyBar
+            computed={calc.computed}
+            shippingInfo={calc.state.shippingInfo}
+            className="mobile-only"
+          />
         </main>
       ) : (
         <InfoPage />

@@ -63,3 +63,44 @@ button {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* PWA — fullscreen feel */
+@media (display-mode: standalone) {
+  body { background: var(--bg); }
+}
+
+/* Responsive grid helpers */
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .layout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tambah padding bawah saat mobile untuk sticky bar */
+  .mobile-scroll-pad {
+    padding-bottom: 140px;
+  }
+
+  /* Sembunyikan sidebar di mobile */
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Full width card di mobile */
+  .card-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Sembunyikan sticky bar mobile di desktop */
+  .mobile-only {
+    display: none !important;
+  }
+}
