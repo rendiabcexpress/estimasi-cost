@@ -30,12 +30,14 @@ export function Step3SalesTariff({
           value={tariff.hargaPerKg}
           onChange={(v) => onChangeTariff('hargaPerKg', v)}
           prefix="Rp"
+          currency
         />
         <NumberInput
           label="Harga per Koli (Rp)"
           value={tariff.hargaPerKoli}
           onChange={(v) => onChangeTariff('hargaPerKoli', v)}
           prefix="Rp"
+          currency
         />
       </div>
 

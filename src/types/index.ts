@@ -112,3 +112,18 @@ export interface City {
   name: string;
   province_name?: string;
 }
+
+// Data rate untuk auto-fill dari backend atau localStorage
+export interface RouteRate {
+  hargaPerKg: number;
+  hargaPerKoli: number;
+  legs: {
+    firstMile: Leg;
+    middleMile: Leg;
+    lastMile: Leg;
+  };
+  extraCosts: CostItem[];
+  deskripsi?: string;
+}
+
+export type AutoFillStatus = 'idle' | 'loading' | 'applied' | 'not-found';

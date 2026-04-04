@@ -1,8 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, SectionHeader, InputField, InfoNote } from '../ui';
-import { ShippingInfo, City, Produk } from '../../types';
+import { ShippingInfo, City, Produk, AutoFillStatus } from '../../types';
 import { fetchCities, fetchProduk } from '../../services/api';
 import { VOLUME_TYPE_LABEL } from '../../data/masterdata';
+
+// ─── Indonesian province names for sorting ──────────────────────────────────
+
+const INDONESIAN_PROVINCES = new Set([
+  'Aceh', 'Sumatera Utara', 'Sumatera Barat', 'Riau', 'Jambi',
+  'Sumatera Selatan', 'Bengkulu', 'Lampung', 'Kepulauan Bangka Belitung',
+  'Kepulauan Riau', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah',
+  'DI Yogyakarta', 'Jawa Timur', 'Banten', 'Bali', 'Nusa Tenggara Barat',
+  'Nusa Tenggara Timur', 'Kalimantan Barat', 'Kalimantan Tengah',
+  'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara',
+  'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Selatan',
+  'Sulawesi Tenggara', 'Gorontalo', 'Sulawesi Barat', 'Maluku',
+  'Maluku Utara', 'Papua', 'Papua Barat', 'Papua Barat Daya',
+  'Papua Tengah', 'Papua Pegunungan', 'Papua Selatan',
+]);
+
+function isIndonesianCity(city: City): boolean {
+  return !!city.province_name && INDONESIAN_PROVINCES.has(city.province_name);
+}
+
+function sortCitiesIndonesiaFirst(cities: City[]): City[] {
+  return [...cities].sort((a, b) => {
+    const aIsIndo = isIndonesianCity(a);
+    const bIsIndo = isIndonesianCity(b);
+    if (aIsIndo && !bIsIndo) return -1;
+    if (!aIsIndo && bIsIndo) return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
 
 // ─── Searchable City Dropdown ─────────────────────────────────────────────────
 
@@ -19,6 +48,7 @@ function CitySelect({
   const [cities, setCities] = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [fetchError, setFetchError] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -35,9 +65,13 @@ function CitySelect({
     if (!open) return;
     const timer = setTimeout(async () => {
       setLoading(true);
+      setFetchError(false);
       try {
         const data = await fetchCities(query);
-        setCities(data);
+        setCities(sortCitiesIndonesiaFirst(data));
+      } catch {
+        setFetchError(true);
+        setCities([]);
       } finally {
         setLoading(false);
       }
@@ -97,7 +131,10 @@ function CitySelect({
           {loading && (
             <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--text-secondary)' }}>Memuat...</div>
           )}
-          {!loading && cities.length === 0 && (
+          {!loading && fetchError && (
+            <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--danger)' }}>Gagal memuat data — periksa koneksi server</div>
+          )}
+          {!loading && !fetchError && cities.length === 0 && (
             <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--text-secondary)' }}>Kota tidak ditemukan</div>
           )}
           {!loading && cities.map((city) => (
@@ -247,9 +284,13 @@ function ProdukSelect({
 export function Step1ShippingInfo({
   info,
   onChange,
+  autoFillStatus = 'idle',
+  onDismissAutoFill,
 }: {
   info: ShippingInfo;
   onChange: (f: Partial<ShippingInfo>) => void;
+  autoFillStatus?: AutoFillStatus;
+  onDismissAutoFill?: () => void;
 }) {
   const [produkList, setProdukList] = useState<Produk[]>([]);
   const [loadingProduk, setLoadingProduk] = useState(true);
@@ -308,6 +349,40 @@ export function Step1ShippingInfo({
           ℹ️ Volume divider: <strong>{selectedProduk.volume_divider.toLocaleString('id-ID')}</strong> cm³/kg
           — {VOLUME_TYPE_LABEL[selectedProduk.volume_type] ?? selectedProduk.volume_type}
         </InfoNote>
+      )}
+
+      {/* Auto-fill status banner */}
+      {autoFillStatus === 'loading' && (
+        <div style={{
+          marginTop: 12, padding: '10px 14px', borderRadius: 'var(--radius-sm)',
+          background: 'var(--primary-light)', color: 'var(--primary)',
+          fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <span style={{ display: 'inline-block', width: 14, height: 14, border: '2px solid var(--primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} />
+          Mencari data rute...
+          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        </div>
+      )}
+      {autoFillStatus === 'applied' && (
+        <div style={{
+          marginTop: 12, padding: '10px 14px', borderRadius: 'var(--radius-sm)',
+          background: '#DCFCE7', border: '1px solid #16A34A40',
+          fontSize: 13, fontWeight: 500, color: '#15803D',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <span>Data ditemukan — tarif & biaya diisi otomatis dari riwayat</span>
+          {onDismissAutoFill && (
+            <button
+              onClick={onDismissAutoFill}
+              style={{
+                background: 'none', border: 'none', color: '#15803D',
+                cursor: 'pointer', fontWeight: 700, fontSize: 16, lineHeight: 1, padding: '0 4px',
+              }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       )}
     </Card>
   );

@@ -38,6 +38,7 @@ export function Step5ExtraCosts({
           <NumberInput
             value={item.biaya}
             onChange={(v) => onUpdate(item.id, 'biaya', v)}
+            currency
           />
           <DeleteBtn onClick={() => onRemove(item.id)} />
         </div>

@@ -148,7 +148,7 @@ export function formatWeight(value: number, decimals = 1): string {
 }
 
 export function formatCbm(value: number): string {
-  return `${value.toFixed(3)} m³`;
+  return `${new Intl.NumberFormat('id-ID', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).format(value)} m³`;
 }
 
 // --- Generate unique ID ---

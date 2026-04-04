@@ -97,6 +97,7 @@ export function LegSection({
                 value={item.biaya}
                 onChange={(v) => onUpdateItem(item.id, 'biaya', v)}
                 placeholder="0"
+                currency
               />
               <DeleteBtn onClick={() => onRemoveItem(item.id)} />
             </div>

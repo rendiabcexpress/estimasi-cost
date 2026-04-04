@@ -1,4 +1,4 @@
-import React, { useState, useId } from 'react';
+import React, { useState, useId, useCallback } from 'react';
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
@@ -82,6 +82,8 @@ export function InputField({
   style,
   readOnly = false,
   rows,
+  onBlur,
+  inputMode,
 }: {
   label?: string;
   value: string;
@@ -94,6 +96,8 @@ export function InputField({
   style?: React.CSSProperties;
   readOnly?: boolean;
   rows?: number;
+  onBlur?: () => void;
+  inputMode?: 'numeric' | 'decimal' | 'text';
 }) {
   const [focused, setFocused] = useState(false);
   const id = useId();
@@ -163,12 +167,13 @@ export function InputField({
           <input
             id={id}
             type={type}
+            inputMode={inputMode}
             value={value}
             onChange={(e) => onChange?.(e.target.value)}
             placeholder={placeholder}
             readOnly={readOnly || autoMode}
             onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
+            onBlur={() => { setFocused(false); onBlur?.(); }}
             style={inputStyle}
           />
         )}
@@ -184,6 +189,8 @@ export function InputField({
 
 // ─── NumberInput ──────────────────────────────────────────────────────────────
 
+const thousandFmt = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 });
+
 export function NumberInput({
   label,
   value,
@@ -191,6 +198,7 @@ export function NumberInput({
   placeholder = '0',
   prefix,
   style,
+  currency = false,
 }: {
   label?: string;
   value: number;
@@ -198,13 +206,43 @@ export function NumberInput({
   placeholder?: string;
   prefix?: string;
   style?: React.CSSProperties;
+  currency?: boolean;
 }) {
+  const handleChange = useCallback(
+    (v: string) => {
+      if (currency) {
+        const digits = v.replace(/\D/g, '');
+        onChange(parseInt(digits, 10) || 0);
+      } else {
+        onChange(parseFloat(v) || 0);
+      }
+    },
+    [currency, onChange],
+  );
+
+  if (!currency) {
+    return (
+      <InputField
+        label={label}
+        value={value > 0 ? String(value) : ''}
+        onChange={handleChange}
+        type="number"
+        placeholder={placeholder}
+        prefix={prefix}
+        style={style}
+      />
+    );
+  }
+
+  const display = value > 0 ? thousandFmt.format(value) : '';
+
   return (
     <InputField
       label={label}
-      value={value > 0 ? String(value) : ''}
-      onChange={(v) => onChange(parseFloat(v) || 0)}
-      type="number"
+      value={display}
+      onChange={handleChange}
+      type="text"
+      inputMode="numeric"
       placeholder={placeholder}
       prefix={prefix}
       style={style}

@@ -146,6 +146,8 @@ export default function App() {
             <Step1ShippingInfo
               info={calc.state.shippingInfo}
               onChange={calc.setShippingInfo}
+              autoFillStatus={calc.autoFillStatus}
+              onDismissAutoFill={calc.dismissAutoFill}
             />
             <Step2ItemDetails
               inputMode={calc.state.inputMode}

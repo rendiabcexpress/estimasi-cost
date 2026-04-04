@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   CalculatorState,
   DimensionItem,
@@ -6,8 +6,12 @@ import {
   InputMode,
   ShippingInfo,
   Tariff,
+  AutoFillStatus,
+  RouteRate,
 } from '../types';
 import { computeAll, genId } from '../utils/calculations';
+import { fetchRouteRate } from '../services/api';
+import { findInHistory, saveToHistory } from '../services/autoFillHistory';
 
 const DEFAULT_STATE: CalculatorState = {
   shippingInfo: {
@@ -45,6 +49,9 @@ const DEFAULT_STATE: CalculatorState = {
 
 export function useCalculator() {
   const [state, setState] = useState<CalculatorState>(DEFAULT_STATE);
+  const [autoFillStatus, setAutoFillStatus] = useState<AutoFillStatus>('idle');
+  const lastAutoFillKey = useRef('');
+  const abortRef = useRef<AbortController | null>(null);
 
   // --- Computed values (reaktif, tanpa tombol hitung) ---
   const computed = useMemo(() => computeAll(state), [state]);
@@ -188,17 +195,99 @@ export function useCalculator() {
     }));
   }, []);
 
+  // --- Auto-fill: fetch rate saat asal+tujuan+produk lengkap ---
+  useEffect(() => {
+    const { asalKotaId, tujuanKotaId, produkId } = state.shippingInfo;
+    if (!asalKotaId || !tujuanKotaId || !produkId) {
+      setAutoFillStatus('idle');
+      return;
+    }
+
+    const key = `${asalKotaId}-${tujuanKotaId}-${produkId}`;
+    if (key === lastAutoFillKey.current) return;
+
+    // Cancel previous fetch
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setAutoFillStatus('loading');
+
+    const applyRate = (rate: RouteRate) => {
+      lastAutoFillKey.current = key;
+      setState((s) => ({
+        ...s,
+        tariff: {
+          hargaPerKg: s.tariff.hargaPerKg === 0 ? rate.hargaPerKg : s.tariff.hargaPerKg,
+          hargaPerKoli: s.tariff.hargaPerKoli === 0 ? rate.hargaPerKoli : s.tariff.hargaPerKoli,
+        },
+        legs: {
+          firstMile: s.legs.firstMile.items.length === 0 && s.legs.firstMile.vendor === ''
+            ? rate.legs.firstMile : s.legs.firstMile,
+          middleMile: s.legs.middleMile.items.length === 0 && s.legs.middleMile.vendor === ''
+            ? rate.legs.middleMile : s.legs.middleMile,
+          lastMile: s.legs.lastMile.items.length === 0 && s.legs.lastMile.vendor === ''
+            ? rate.legs.lastMile : s.legs.lastMile,
+        },
+        extraCosts: s.extraCosts.length === 0 && rate.extraCosts.length > 0
+          ? rate.extraCosts : s.extraCosts,
+        shippingInfo: {
+          ...s.shippingInfo,
+          deskripsi: s.shippingInfo.deskripsi === '' && rate.deskripsi
+            ? rate.deskripsi : s.shippingInfo.deskripsi,
+        },
+      }));
+      setAutoFillStatus('applied');
+    };
+
+    // Try backend API first, then fall back to localStorage
+    fetchRouteRate(asalKotaId, tujuanKotaId, produkId, controller.signal).then((apiRate) => {
+      if (controller.signal.aborted) return;
+
+      if (apiRate) {
+        applyRate(apiRate);
+      } else {
+        // Fallback: cari di localStorage history
+        const historyRate = findInHistory(asalKotaId, tujuanKotaId, produkId);
+        if (historyRate) {
+          applyRate(historyRate);
+        } else {
+          lastAutoFillKey.current = key;
+          setAutoFillStatus('not-found');
+        }
+      }
+    });
+
+    return () => controller.abort();
+  }, [state.shippingInfo.asalKotaId, state.shippingInfo.tujuanKotaId, state.shippingInfo.produkId]);
+
+  // --- Save to history: simpan saat ada data bermakna ---
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => {
+    clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      saveToHistory(state);
+    }, 2000); // debounce 2s
+    return () => clearTimeout(saveTimeoutRef.current);
+  }, [state.tariff, state.legs, state.extraCosts, state.shippingInfo]);
+
   // --- Reset ---
   const reset = useCallback(() => {
+    lastAutoFillKey.current = '';
+    setAutoFillStatus('idle');
     setState({
       ...DEFAULT_STATE,
       items: [{ id: genId(), koli: 1, panjang: 0, lebar: 0, tinggi: 0, berat: 0 }],
     });
   }, []);
 
+  const dismissAutoFill = useCallback(() => setAutoFillStatus('idle'), []);
+
   return {
     state,
     computed,
+    autoFillStatus,
+    dismissAutoFill,
     setShippingInfo,
     setInputMode,
     addItem,
