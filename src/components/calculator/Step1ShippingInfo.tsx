@@ -3,6 +3,7 @@ import { Card, SectionHeader, InputField, InfoNote } from '../ui';
 import { ShippingInfo, City, Produk, AutoFillStatus } from '../../types';
 import { fetchCities, fetchProduk } from '../../services/api';
 import { VOLUME_TYPE_LABEL } from '../../data/masterdata';
+import { IconPackage, IconTruck, IconPlane, IconWorld, IconShip, IconInfoCircle } from '@tabler/icons-react';
 
 // ─── Indonesian province names for sorting ──────────────────────────────────
 
@@ -190,8 +191,11 @@ function ProdukSelect({
 
   const selected = produkList.find((p) => p.id === value.id);
 
-  const modeIcon: Record<string, string> = {
-    '9': '🚛', '15': '✈️', '16': '🌐', '20': '🚢',
+  const modeIcon: Record<string, React.ReactNode> = {
+    '9': <IconTruck size={18} stroke={1.5} />,
+    '15': <IconPlane size={18} stroke={1.5} />,
+    '16': <IconWorld size={18} stroke={1.5} />,
+    '20': <IconShip size={18} stroke={1.5} />,
   };
 
   return (
@@ -217,7 +221,7 @@ function ProdukSelect({
           <span style={{ color: 'var(--text-muted)' }}>Memuat...</span>
         ) : selected ? (
           <>
-            <span>{modeIcon[selected.volume_type] ?? '📦'}</span>
+            <span style={{ display: 'flex', alignItems: 'center', color: 'var(--text-secondary)' }}>{modeIcon[selected.volume_type] ?? <IconPackage size={18} stroke={1.5} />}</span>
             <span style={{ fontWeight: 600 }}>{selected.produk}</span>
             <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
               — {VOLUME_TYPE_LABEL[selected.volume_type] ?? selected.volume_type}
@@ -243,7 +247,8 @@ function ProdukSelect({
           borderRadius: 'var(--radius-md)',
           boxShadow: '0 8px 24px rgba(26,29,58,0.14)',
           zIndex: 200,
-          overflow: 'hidden',
+          maxHeight: 260,
+          overflowY: 'auto',
         }}>
           {produkList.map((p) => {
             const isSelected = p.id === value.id;
@@ -261,7 +266,7 @@ function ProdukSelect({
                 onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = 'var(--bg)'; }}
                 onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = 'white'; }}
               >
-                <span style={{ fontSize: 18 }}>{modeIcon[p.volume_type] ?? '📦'}</span>
+                <span style={{ display: 'flex', alignItems: 'center', color: 'var(--text-secondary)' }}>{modeIcon[p.volume_type] ?? <IconPackage size={18} stroke={1.5} />}</span>
                 <div>
                   <div style={{ fontWeight: isSelected ? 700 : 500, color: isSelected ? 'var(--primary)' : 'var(--text)', fontSize: 14 }}>
                     {p.produk}
@@ -305,7 +310,7 @@ export function Step1ShippingInfo({
 
   return (
     <Card>
-      <SectionHeader icon="📦" title="Informasi Pengiriman" />
+      <SectionHeader icon={<IconPackage size={20} stroke={1.5} />} title="Informasi Pengiriman" />
 
       {/* Asal & Tujuan — searchable, dari tabel city antero_new */}
       <div style={{ display: 'grid', gap: 12, marginBottom: 12 }} className="card-grid-2">
@@ -346,7 +351,7 @@ export function Step1ShippingInfo({
 
       {selectedProduk && (
         <InfoNote>
-          ℹ️ Volume divider: <strong>{selectedProduk.volume_divider.toLocaleString('id-ID')}</strong> cm³/kg
+          <IconInfoCircle size={14} stroke={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />Volume divider: <strong>{selectedProduk.volume_divider.toLocaleString('id-ID')}</strong> cm³/kg
           — {VOLUME_TYPE_LABEL[selectedProduk.volume_type] ?? selectedProduk.volume_type}
         </InfoNote>
       )}

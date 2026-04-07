@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { InputField, NumberInput, AddButton, DeleteBtn } from '../ui';
 import { CostItem, Leg } from '../../types';
 import { formatRp } from '../../utils/calculations';
+import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 
 interface Props {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   color: string;
   leg: Leg;
@@ -53,7 +54,7 @@ export function LegSection({
           textAlign: 'left',
         }}
       >
-        <span style={{ fontSize: 16 }}>{icon}</span>
+        <span style={{ display: 'flex', alignItems: 'center', color }}>{icon}</span>
         <span style={{ flex: 1, fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{label}</span>
         <span
           style={{
@@ -64,8 +65,8 @@ export function LegSection({
         >
           Rp {formatRp(subtotal)}
         </span>
-        <span style={{ fontSize: 11, color: 'var(--text-secondary)', marginLeft: 8 }}>
-          {collapsed ? '▶' : '▼'}
+        <span style={{ color: 'var(--text-secondary)', marginLeft: 8, display: 'flex' }}>
+          {collapsed ? <IconChevronRight size={16} stroke={2} /> : <IconChevronDown size={16} stroke={2} />}
         </span>
       </button>
 
@@ -79,7 +80,7 @@ export function LegSection({
           />
 
           {leg.items.length > 0 && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 36px', gap: 8, marginTop: 12, marginBottom: 4, alignItems: 'center' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr minmax(100px, 140px) 32px', gap: 8, marginTop: 12, marginBottom: 4, alignItems: 'center' }}>
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Deskripsi</span>
               <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', textAlign: 'right' }}>Biaya (Rp)</span>
               <span />
@@ -87,7 +88,7 @@ export function LegSection({
           )}
 
           {leg.items.map((item) => (
-            <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '1fr 140px 36px', gap: 8, marginBottom: 6, alignItems: 'center' }}>
+            <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '1fr minmax(100px, 140px) 32px', gap: 8, marginBottom: 6, alignItems: 'center' }}>
               <InputField
                 value={item.deskripsi}
                 onChange={(v) => onUpdateItem(item.id, 'deskripsi', v)}

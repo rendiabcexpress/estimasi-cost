@@ -2,6 +2,7 @@ import React from 'react';
 import { ComputedValues, ShippingInfo } from '../types';
 import { formatRp } from '../utils/calculations';
 import { TARGET_MARGIN } from '../data/masterdata';
+import { IconCircleCheck, IconAlertTriangle, IconCircleX } from '@tabler/icons-react';
 
 export function MobileStickyBar({
   computed,
@@ -21,7 +22,11 @@ export function MobileStickyBar({
     marginStatus === 'ok' ? '#16A34A' : marginStatus === 'warning' ? '#D97706' : '#DC2626';
   const statusBg =
     marginStatus === 'ok' ? '#DCFCE7' : marginStatus === 'warning' ? '#FEF3C7' : '#FEE2E2';
-  const statusIcon = marginStatus === 'ok' ? '✅' : marginStatus === 'warning' ? '⚠️' : '🔴';
+  const statusIcon = marginStatus === 'ok'
+    ? <IconCircleCheck size={13} stroke={2.5} color={statusColor} />
+    : marginStatus === 'warning'
+    ? <IconAlertTriangle size={13} stroke={2.5} color={statusColor} />
+    : <IconCircleX size={13} stroke={2.5} color={statusColor} />;
 
   const route =
     shippingInfo.asalKotaName && shippingInfo.tujuanKotaName
@@ -47,7 +52,7 @@ export function MobileStickyBar({
         boxShadow: '0 -4px 16px rgba(26,29,58,0.12)',
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
-        padding: '10px 16px 20px',
+        padding: '10px 12px 20px',
         zIndex: 100,
         // safe area for iOS home indicator
         paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
@@ -65,7 +70,7 @@ export function MobileStickyBar({
       )}
 
       {/* 4 metric cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 6 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 4, marginBottom: 6 }}>
         <MetricCard label="Revenue" value={formatRp(totalRevenue, true)} color="#16A34A" bg="#DCFCE7" />
         <MetricCard
           label="Cost"
@@ -99,7 +104,7 @@ export function MobileStickyBar({
           gap: 6,
         }}
       >
-        <span style={{ fontSize: 13 }}>{statusIcon}</span>
+        <span style={{ display: 'flex', flexShrink: 0 }}>{statusIcon}</span>
         <span style={{ fontSize: 11, color: statusColor, fontWeight: 600, lineHeight: 1.4 }}>
           {statusMsg}
         </span>

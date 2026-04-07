@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, SectionHeader, Divider } from '../ui';
+import { IconChartBar, IconCircleCheck, IconAlertTriangle, IconCircleX, IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { ComputedValues, CalculatorState } from '../../types';
 import { formatRp, formatWeight, formatCbm } from '../../utils/calculations';
 import { TARGET_MARGIN } from '../../data/masterdata';
@@ -27,15 +28,19 @@ export function Step6Breakdown({
     rugi: { fg: 'var(--danger)', bg: 'var(--danger-light)', border: 'rgba(231,76,60,0.25)' },
   };
   const c = colors[marginStatus];
-  const icon = marginStatus === 'ok' ? '✅' : marginStatus === 'warning' ? '⚠️' : '🔴';
+  const icon = marginStatus === 'ok'
+    ? <IconCircleCheck size={24} stroke={2} color="var(--success)" />
+    : marginStatus === 'warning'
+    ? <IconAlertTriangle size={24} stroke={2} color="var(--warning)" />
+    : <IconCircleX size={24} stroke={2} color="var(--danger)" />;
 
   return (
     <Card>
-      <SectionHeader icon="📊" title="Hasil Estimasi Margin" />
+      <SectionHeader icon={<IconChartBar size={20} stroke={1.5} />} title="Hasil Estimasi Margin" />
 
       {/* Alert */}
       <div style={{ display: 'flex', gap: 12, padding: 16, background: c.bg, borderRadius: 'var(--radius-md)', border: `1px solid ${c.border}`, marginBottom: 16 }}>
-        <span style={{ fontSize: 24 }}>{icon}</span>
+        <span style={{ flexShrink: 0, display: 'flex' }}>{icon}</span>
         <div style={{ flex: 1 }}>
           {marginStatus === 'ok' ? (
             <>
@@ -45,7 +50,7 @@ export function Step6Breakdown({
           ) : marginStatus === 'warning' ? (
             <>
               <div style={{ fontWeight: 700, fontSize: 15, color: c.fg, marginBottom: 8 }}>Belum Memenuhi Target {TARGET_MARGIN}%</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+              <div style={{ fontSize: 13 }}>
                 <AlertRow label="Margin saat ini" value={`${marginPct.toFixed(2)}%`} color={c.fg} />
                 <AlertRow label="Kekurangan" value={`${(TARGET_MARGIN - marginPct).toFixed(2)}%`} color={c.fg} />
                 <AlertRow label="Revenue minimum" value={`Rp ${formatRp(minRevenueFor40)}`} color={c.fg} />
@@ -55,8 +60,8 @@ export function Step6Breakdown({
             </>
           ) : (
             <>
-              <div style={{ fontWeight: 700, fontSize: 15, color: c.fg, marginBottom: 8 }}>RUGI — Margin Negatif</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 24px', fontSize: 13 }}>
+              <div style={{ fontWeight: 700, fontSize: 15, color: c.fg, marginBottom: 8 }}>RUGI -- Margin Negatif</div>
+              <div style={{ fontSize: 13 }}>
                 <AlertRow label="Margin saat ini" value={`${marginPct.toFixed(2)}%`} color={c.fg} />
                 <AlertRow label="Kerugian" value={`Rp ${formatRp(Math.abs(margin))}`} color={c.fg} />
                 <AlertRow label="Revenue minimum (40%)" value={`Rp ${formatRp(minRevenueFor40)}`} color={c.fg} />
@@ -71,8 +76,7 @@ export function Step6Breakdown({
       <CollapseSection title="Detail Breakdown" open={showBreakdown} onToggle={() => setShowBreakdown(v => !v)}>
         <div style={{ background: 'var(--card-inner)', borderRadius: 'var(--radius-md)', padding: 16, border: '1px solid var(--border)', fontSize: 13 }}>
           <BdGroup label="REVENUE" amount={totalRevenue} color="var(--success)">
-            <BdRow label={`Berat: ${weightSummary.totalChargeableWeight}kg × Rp${formatRp(state.tariff.hargaPerKg)}`} amount={revenueBerat} indent={1} />
-            <BdRow label={`Koli: ${weightSummary.totalKoli} × Rp${formatRp(state.tariff.hargaPerKoli)}`} amount={revenueKoli} indent={1} />
+            <BdRow label={`${weightSummary.totalChargeableWeight}kg x Rp${formatRp(state.tariff.hargaPerKg)}/kg`} amount={revenueBerat} indent={1} />
           </BdGroup>
           <BdGroup label="BIAYA OPERASIONAL" amount={totalOpsCost} color="var(--danger)">
             <BdRow label={`First Mile${state.legs.firstMile.vendor ? ` (${state.legs.firstMile.vendor})` : ''}`} amount={subtotalFirstMile} indent={1} />
@@ -88,7 +92,7 @@ export function Step6Breakdown({
             </BdGroup>
           )}
           <Divider my={10} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          <div className="card-grid-3" style={{ display: 'grid', gap: 8 }}>
             <FinalCard label="Total Cost" value={`Rp ${formatRp(totalCost)}`} color="var(--danger)" />
             <FinalCard label="Margin" value={`Rp ${formatRp(margin)}`} color={marginStatus === 'ok' ? 'var(--success)' : 'var(--warning)'} />
             <FinalCard label="Margin %" value={`${marginPct.toFixed(2)}%`} color={c.fg} bg={c.bg} large />
@@ -101,20 +105,16 @@ export function Step6Breakdown({
       {/* Ringkasan Berat */}
       <CollapseSection title="Ringkasan Berat & Efisiensi" open={showWeight} onToggle={() => setShowWeight(v => !v)}>
         <div style={{ background: 'var(--card-inner)', borderRadius: 'var(--radius-md)', padding: 16, border: '1px solid var(--border)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
-            {[
-              ['Total Koli', `${weightSummary.totalKoli} koli`],
-              ['Actual Weight', formatWeight(weightSummary.totalActualWeight)],
-              ['Volumetric Weight', formatWeight(weightSummary.totalVolumetricWeight, 1)],
-              ['Kubikasi (CBM)', formatCbm(weightSummary.totalCbm)],
-            ].map(([l, v]) => <ERow key={l} label={l} value={v} />)}
-          </div>
-          <ERow label="Chargeable Weight ★" value={formatWeight(weightSummary.totalChargeableWeight, 0)} highlight />
+          {[
+            ['Total Koli', `${weightSummary.totalKoli} koli`],
+            ['Actual Weight', formatWeight(weightSummary.totalActualWeight)],
+            ['Volumetric Weight', formatWeight(weightSummary.totalVolumetricWeight, 1)],
+            ['Kubikasi (CBM)', formatCbm(weightSummary.totalCbm)],
+          ].map(([l, v]) => <ERow key={l} label={l} value={v} />)}
+          <ERow label="Chargeable Weight" value={formatWeight(weightSummary.totalChargeableWeight, 0)} highlight />
           <Divider my={8} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
-            <ERow label="Biaya per Kg (CW)" value={`Rp ${formatRp(weightSummary.totalChargeableWeight > 0 ? totalCost / weightSummary.totalChargeableWeight : 0)}`} />
-            <ERow label="Revenue per Kg (CW)" value={`Rp ${formatRp(weightSummary.totalChargeableWeight > 0 ? totalRevenue / weightSummary.totalChargeableWeight : 0)}`} />
-          </div>
+          <ERow label="Biaya per Kg (CW)" value={`Rp ${formatRp(weightSummary.totalChargeableWeight > 0 ? totalCost / weightSummary.totalChargeableWeight : 0)}`} />
+          <ERow label="Revenue per Kg (CW)" value={`Rp ${formatRp(weightSummary.totalChargeableWeight > 0 ? totalRevenue / weightSummary.totalChargeableWeight : 0)}`} />
         </div>
       </CollapseSection>
     </Card>
@@ -124,9 +124,9 @@ export function Step6Breakdown({
 // Sub-components
 function AlertRow({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', color, padding: '2px 0' }}>
-      <span>→ {label}</span>
-      <span style={{ fontWeight: 700 }}>{value}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color, padding: '3px 0', borderBottom: `1px solid ${color}20` }}>
+      <span style={{ fontSize: 12 }}>{label}</span>
+      <span style={{ fontWeight: 700, fontSize: 13, whiteSpace: 'nowrap', marginLeft: 8 }}>{value}</span>
     </div>
   );
 }
@@ -136,7 +136,7 @@ function CollapseSection({ title, open, onToggle, children }: { title: string; o
     <>
       <button onClick={onToggle} style={{ display: 'flex', justifyContent: 'space-between', width: '100%', border: 'none', background: 'none', cursor: 'pointer', padding: '6px 0', marginBottom: 8 }}>
         <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--text)' }}>{title}</span>
-        <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{open ? '▼' : '▶'}</span>
+        <span style={{ color: 'var(--text-secondary)', display: 'flex' }}>{open ? <IconChevronDown size={16} stroke={2} /> : <IconChevronRight size={16} stroke={2} />}</span>
       </button>
       {open && children}
     </>

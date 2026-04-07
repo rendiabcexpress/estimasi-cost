@@ -1,4 +1,5 @@
 import React, { useState, useId, useCallback } from 'react';
+import { IconPlus, IconX } from '@tabler/icons-react';
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
@@ -13,6 +14,7 @@ export function Card({
 }) {
   return (
     <div
+      className={inner ? 'est-card-inner' : 'est-card'}
       style={{
         background: inner ? 'var(--card-inner)' : 'var(--card)',
         borderRadius: inner ? 'var(--radius-md)' : 'var(--radius-lg)',
@@ -20,6 +22,7 @@ export function Card({
         boxShadow: inner ? 'none' : 'var(--shadow-card)',
         border: inner ? '1px solid var(--border)' : 'none',
         marginBottom: inner ? 0 : 12,
+        maxWidth: '100%',
         ...style,
       }}
     >
@@ -35,7 +38,7 @@ export function SectionHeader({
   title,
   subtitle,
 }: {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   subtitle?: string;
 }) {
@@ -50,7 +53,7 @@ export function SectionHeader({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 18,
+          color: 'var(--primary)',
           flexShrink: 0,
         }}
       >
@@ -128,7 +131,7 @@ export function InputField({
   };
 
   return (
-    <div style={{ flex: 1, ...style }}>
+    <div style={{ flex: 1, minWidth: 0, ...style }}>
       {label && (
         <label
           htmlFor={id}
@@ -314,7 +317,7 @@ export function Select({
 }) {
   const id = useId();
   return (
-    <div style={{ flex: 1, ...style }}>
+    <div style={{ flex: 1, minWidth: 0, ...style }}>
       {label && (
         <label
           htmlFor={id}
@@ -446,7 +449,7 @@ export function AddButton({
       onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--primary-light)')}
       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
     >
-      <span style={{ fontSize: 16, lineHeight: 1 }}>＋</span>
+      <IconPlus size={16} stroke={2.5} />
       {label}
     </button>
   );
@@ -477,7 +480,7 @@ export function DeleteBtn({ onClick }: { onClick: () => void }) {
       onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       title="Hapus"
     >
-      ✕
+      <IconX size={14} stroke={2.5} />
     </button>
   );
 }

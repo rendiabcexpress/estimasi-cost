@@ -9,6 +9,12 @@ import { Step5ExtraCosts } from './components/calculator/Step5ExtraCosts';
 import { Step6Breakdown } from './components/calculator/Step6Breakdown';
 import { SummaryPanel } from './components/SummaryPanel';
 import { MobileStickyBar } from './components/MobileStickyBar';
+import { PrintView } from './components/PrintView';
+import {
+  IconCalculator, IconInfoCircle, IconRefresh, IconPrinter,
+  IconBook, IconMath, IconPalette, IconClipboardList, IconBulb,
+  IconCircle1, IconCircle2, IconCircle3, IconCircle4, IconCircle5, IconCircle6,
+} from '@tabler/icons-react';
 
 type Tab = 'kalkulator' | 'info';
 
@@ -24,7 +30,12 @@ export default function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <>
+    {/* Print-only view */}
+    <PrintView state={calc.state} computed={calc.computed} />
+
+    {/* Normal app UI — hidden during print */}
+    <div className="screen-only" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Top Navigation */}
       <header
         style={{
@@ -57,10 +68,10 @@ export default function App() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: 16,
+                color: 'white',
               }}
             >
-              📊
+              <IconCalculator size={18} stroke={2} />
             </div>
             <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--text)', lineHeight: 1 }}>
               EstCost
@@ -86,8 +97,8 @@ export default function App() {
                 }}
               >
                 {t === 'kalkulator'
-                  ? (isMobile ? '📊' : '📊 Kalkulator')
-                  : (isMobile ? 'ℹ️' : 'ℹ️ Panduan')}
+                  ? (<><IconCalculator size={16} stroke={2} style={{ verticalAlign: 'middle' }} />{!isMobile && ' Kalkulator'}</>)
+                  : (<><IconInfoCircle size={16} stroke={2} style={{ verticalAlign: 'middle' }} />{!isMobile && ' Panduan'}</>)}
               </button>
             ))}
           </nav>
@@ -110,27 +121,50 @@ export default function App() {
             </div>
           )}
 
-          {/* Reset button */}
+          {/* Print & Reset buttons */}
           {tab === 'kalkulator' && (
-            <button
-              onClick={handleReset}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: isMobile ? '6px 10px' : '6px 14px',
-                borderRadius: 'var(--radius-full)',
-                border: '1px solid rgba(231,76,60,0.3)',
-                background: 'var(--danger-light)',
-                color: 'var(--danger)',
-                fontWeight: 600,
-                fontSize: isMobile ? 12 : 13,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              ↺ {isMobile ? '' : 'Reset'}
-            </button>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button
+                onClick={() => window.print()}
+                className="no-print"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  padding: isMobile ? '6px 10px' : '6px 14px',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1px solid rgba(37,99,235,0.3)',
+                  background: 'var(--primary-light)',
+                  color: 'var(--primary)',
+                  fontWeight: 600,
+                  fontSize: isMobile ? 12 : 13,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <IconPrinter size={14} stroke={2.5} />{!isMobile && ' Print'}
+              </button>
+              <button
+                onClick={handleReset}
+                className="no-print"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  padding: isMobile ? '6px 10px' : '6px 14px',
+                  borderRadius: 'var(--radius-full)',
+                  border: '1px solid rgba(231,76,60,0.3)',
+                  background: 'var(--danger-light)',
+                  color: 'var(--danger)',
+                  fontWeight: 600,
+                  fontSize: isMobile ? 12 : 13,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <IconRefresh size={14} stroke={2.5} />{!isMobile && ' Reset'}
+              </button>
+            </div>
           )}
         </div>
       </header>
@@ -138,7 +172,7 @@ export default function App() {
       {/* Main content */}
       {tab === 'kalkulator' ? (
         <main
-          style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '12px' : '24px' }}
+          style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '8px' : '16px 24px' }}
           className="layout-grid"
         >
           {/* Left column — all steps */}
@@ -165,9 +199,7 @@ export default function App() {
               tariff={calc.state.tariff}
               onChangeTariff={calc.setTariff}
               totalCW={calc.computed.weightSummary.totalChargeableWeight}
-              totalKoli={calc.computed.weightSummary.totalKoli}
               revenueBerat={calc.computed.revenueBerat}
-              revenueKoli={calc.computed.revenueKoli}
               totalRevenue={calc.computed.totalRevenue}
             />
             <Step4OpsCosts
@@ -207,6 +239,7 @@ export default function App() {
         <InfoPage />
       )}
     </div>
+    </>
   );
 }
 
@@ -221,31 +254,31 @@ function InfoPage() {
   }, []);
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: '24px' }}>
-      <InfoCard title="📖 Cara Pakai">
-        {[
-          ['1️⃣', 'Isi asal, tujuan, deskripsi & pilih produk (moda angkutan)'],
-          ['2️⃣', 'Input dimensi barang per baris atau langsung masukkan total berat'],
-          ['3️⃣', 'Isi harga jual per kg dan per koli'],
-          ['4️⃣', 'Tambah biaya operasional per leg (First Mile, Middle Mile, Last Mile)'],
-          ['5️⃣', 'Tambah biaya tambahan jika ada (asuransi, packaging, dll)'],
-          ['6️⃣', 'Margin update otomatis di panel kanan — edit apapun langsung berubah'],
-        ].map(([num, text]) => (
-          <div key={num as string} style={{ display: 'flex', gap: 12, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-            <span style={{ fontSize: 20 }}>{num}</span>
-            <span style={{ fontSize: 14, color: 'var(--text)', paddingTop: 2 }}>{text}</span>
+      <InfoCard title={<><IconBook size={18} stroke={2} style={{ verticalAlign: 'middle', marginRight: 6 }} />Cara Pakai</>}>
+        {([
+          [<IconCircle1 size={20} stroke={1.5} color="var(--primary)" />, 'Isi asal, tujuan, deskripsi & pilih produk (moda angkutan)'],
+          [<IconCircle2 size={20} stroke={1.5} color="var(--primary)" />, 'Input dimensi barang per baris atau langsung masukkan total berat'],
+          [<IconCircle3 size={20} stroke={1.5} color="var(--primary)" />, 'Isi harga jual per kg dan per koli'],
+          [<IconCircle4 size={20} stroke={1.5} color="var(--primary)" />, 'Tambah biaya operasional per leg (First Mile, Middle Mile, Last Mile)'],
+          [<IconCircle5 size={20} stroke={1.5} color="var(--primary)" />, 'Tambah biaya tambahan jika ada (asuransi, packaging, dll)'],
+          [<IconCircle6 size={20} stroke={1.5} color="var(--primary)" />, 'Margin update otomatis di panel kanan — edit apapun langsung berubah'],
+        ] as [React.ReactNode, string][]).map(([icon, text], i) => (
+          <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 0', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+            <span style={{ flexShrink: 0 }}>{icon}</span>
+            <span style={{ fontSize: 14, color: 'var(--text)' }}>{text}</span>
           </div>
         ))}
-        <div style={{ background: 'var(--primary-light)', borderRadius: 8, padding: 12, marginTop: 12, fontSize: 13, color: 'var(--primary)', fontWeight: 500 }}>
-          💡 Tidak ada tombol "Hitung" — semua kalkulasi berjalan otomatis saat field diubah.
+        <div style={{ background: 'var(--primary-light)', borderRadius: 8, padding: 12, marginTop: 12, fontSize: 13, color: 'var(--primary)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <IconBulb size={16} stroke={2} /> Tidak ada tombol "Hitung" — semua kalkulasi berjalan otomatis saat field diubah.
         </div>
       </InfoCard>
 
-      <InfoCard title="🔢 Rumus Perhitungan">
+      <InfoCard title={<><IconMath size={18} stroke={2} style={{ verticalAlign: 'middle', marginRight: 6 }} />Rumus Perhitungan</>}>
         {[
           ['Volumetric Weight', 'VW = Panjang × Lebar × Tinggi × Koli ÷ volume_divider', 'Dimensi dalam cm, hasil dalam kg. Pembagi 5.000 untuk udara, 4.000 untuk darat/laut.'],
           ['Chargeable Weight ★', 'CW = ⌈ max(Actual Weight, Volumetric Weight) ⌉', 'Ambil terbesar, dibulatkan ke atas. CW dipakai untuk menghitung revenue.'],
           ['Kubikasi (CBM)', 'CBM = Panjang × Lebar × Tinggi × Koli ÷ 1.000.000', 'Konversi cm³ ke m³.'],
-          ['Revenue', 'Revenue = (CW × Harga/kg) + (Koli × Harga/koli)', 'Menggunakan Chargeable Weight, bukan Actual Weight.'],
+          ['Revenue', 'Revenue = CW × Harga/kg', 'Menggunakan Chargeable Weight, bukan Actual Weight.'],
           ['Margin', `Margin = Revenue − Total Cost\nMargin % = Margin ÷ Revenue × 100`, `Target minimal ${TARGET_MARGIN}% — tampil hijau jika tercapai.`],
         ].map(([title, formula, note]) => (
           <div key={title as string} style={{ marginBottom: 16 }}>
@@ -258,7 +291,7 @@ function InfoPage() {
         ))}
       </InfoCard>
 
-      <InfoCard title="🎨 Kode Warna">
+      <InfoCard title={<><IconPalette size={18} stroke={2} style={{ verticalAlign: 'middle', marginRight: 6 }} />Kode Warna</>}>
         {[
           { color: '#16A34A', bg: '#DCFCE7', label: `Hijau — Margin ≥ ${TARGET_MARGIN}%`, desc: 'Target tercapai, harga aman untuk deal' },
           { color: '#D97706', bg: '#FEF3C7', label: `Kuning — Margin 0–${TARGET_MARGIN - 1}%`, desc: 'Belum ideal, pertimbangkan negosiasi cost atau naikkan tarif' },
@@ -274,7 +307,7 @@ function InfoPage() {
         ))}
       </InfoCard>
 
-      <InfoCard title="📋 Master Data Produk">
+      <InfoCard title={<><IconClipboardList size={18} stroke={2} style={{ verticalAlign: 'middle', marginRight: 6 }} />Master Data Produk</>}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--border)' }}>
@@ -300,7 +333,7 @@ function InfoPage() {
   );
 }
 
-function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
+function InfoCard({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
     <div
       style={{

@@ -10,6 +10,7 @@ import {
   Divider,
   InfoNote,
 } from '../ui';
+import { IconRulerMeasure } from '@tabler/icons-react';
 import { DimensionItem, DirectInput, InputMode, DimensionItemCalculated, WeightSummary } from '../../types';
 import { formatWeight, formatCbm } from '../../utils/calculations';
 
@@ -17,83 +18,6 @@ const MODE_OPTIONS = [
   { value: 'dimensi' as InputMode, label: 'Dari Dimensi' },
   { value: 'langsung' as InputMode, label: 'Input Langsung' },
 ];
-
-const TH = ({ children, width = 80 }: { children: React.ReactNode; width?: number }) => (
-  <th
-    style={{
-      width,
-      padding: '4px 6px',
-      fontSize: 11,
-      fontWeight: 700,
-      color: 'var(--text-secondary)',
-      textTransform: 'uppercase',
-      letterSpacing: '0.4px',
-      textAlign: 'center',
-      whiteSpace: 'nowrap',
-    }}
-  >
-    {children}
-  </th>
-);
-
-const TD = ({
-  children,
-  auto = false,
-  highlight = false,
-}: {
-  children: React.ReactNode;
-  auto?: boolean;
-  highlight?: boolean;
-}) => (
-  <td
-    style={{
-      padding: '4px 6px',
-      textAlign: 'center',
-      background: highlight
-        ? 'var(--primary-light)'
-        : auto
-        ? 'var(--card-inner)'
-        : 'transparent',
-      fontSize: 12,
-      fontWeight: auto ? 600 : 400,
-      color: highlight ? 'var(--primary-dark)' : auto ? 'var(--primary)' : 'var(--text)',
-      borderRadius: highlight ? 4 : 0,
-    }}
-  >
-    {children}
-  </td>
-);
-
-function CellNumberInput({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-}) {
-  return (
-    <input
-      type="number"
-      value={value > 0 ? value : ''}
-      onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-      placeholder="0"
-      style={{
-        width: 72,
-        height: 32,
-        border: '1px solid var(--border)',
-        borderRadius: 6,
-        padding: '0 4px',
-        textAlign: 'center',
-        fontSize: 12,
-        color: 'var(--text)',
-        background: 'white',
-        outline: 'none',
-      }}
-      onFocus={(e) => (e.target.style.borderColor = 'var(--primary)')}
-      onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
-    />
-  );
-}
 
 function SummaryRow({
   label,
@@ -136,6 +60,82 @@ function SummaryRow({
   );
 }
 
+// ─── Dimension Item Card (vertical layout) ──────────────────────────────────
+
+function DimensionItemCard({
+  item,
+  index,
+  onUpdate,
+  onRemove,
+}: {
+  item: DimensionItemCalculated;
+  index: number;
+  onUpdate: (field: keyof DimensionItem, value: number) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div
+      style={{
+        border: '1.5px solid var(--border)',
+        borderRadius: 'var(--radius-md)',
+        padding: 14,
+        marginBottom: 8,
+        background: 'white',
+      }}
+    >
+      {/* Header row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+          Barang #{index + 1}
+        </span>
+        <DeleteBtn onClick={onRemove} />
+      </div>
+
+      {/* Input fields - 5 cols on desktop, 2+3 rows on mobile */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 10 }} className="card-grid-dim-input">
+        <NumberInput label="Koli" value={item.koli} onChange={(v) => onUpdate('koli', v)} placeholder="0" />
+        <NumberInput label="P (cm)" value={item.panjang} onChange={(v) => onUpdate('panjang', v)} placeholder="0" />
+        <NumberInput label="L (cm)" value={item.lebar} onChange={(v) => onUpdate('lebar', v)} placeholder="0" />
+        <NumberInput label="T (cm)" value={item.tinggi} onChange={(v) => onUpdate('tinggi', v)} placeholder="0" />
+        <NumberInput label="Berat (kg)" value={item.berat} onChange={(v) => onUpdate('berat', v)} placeholder="0" />
+      </div>
+
+      {/* Auto-calculated results */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }} className="card-grid-dim-result">
+        <AutoResult label="Act.W" value={`${item.actualWeight}`} />
+        <AutoResult label="Vol.W" value={item.volumetricWeight.toFixed(1)} />
+        <AutoResult label="CW" value={`${item.chargeableWeight}`} highlight />
+        <AutoResult label="CBM" value={item.cbm.toFixed(3)} />
+      </div>
+    </div>
+  );
+}
+
+function AutoResult({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div>
+      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.3px', marginBottom: 3 }}>
+        {label}
+      </div>
+      <div
+        style={{
+          background: highlight ? 'var(--primary-light)' : 'var(--card-inner)',
+          borderRadius: 6,
+          padding: '6px 8px',
+          fontSize: 13,
+          fontWeight: highlight ? 800 : 600,
+          color: highlight ? 'var(--primary-dark)' : 'var(--primary)',
+          textAlign: 'center',
+        }}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ─────────────────────────────────────────────────────────
+
 interface Props {
   inputMode: InputMode;
   onModeChange: (m: InputMode) => void;
@@ -163,50 +163,20 @@ export function Step2ItemDetails({
 }: Props) {
   return (
     <Card>
-      <SectionHeader icon="📐" title="Detail Barang & Berat" />
+      <SectionHeader icon={<IconRulerMeasure size={20} stroke={1.5} />} title="Detail Barang & Berat" />
       <SegmentedControl options={MODE_OPTIONS} value={inputMode} onChange={onModeChange} />
 
       {inputMode === 'dimensi' ? (
         <>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 640 }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                  <TH width={72}>Koli</TH>
-                  <TH width={72}>P (cm)</TH>
-                  <TH width={72}>L (cm)</TH>
-                  <TH width={72}>T (cm)</TH>
-                  <TH width={80}>Brt (kg)</TH>
-                  <TH width={72}>Act.W</TH>
-                  <TH width={72}>Vol.W</TH>
-                  <TH width={80}>CW ★</TH>
-                  <TH width={80}>CBM</TH>
-                  <TH width={40}>{''}</TH>
-                </tr>
-              </thead>
-              <tbody>
-                {itemsCalculated.map((item) => (
-                  <tr key={item.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    {(['koli', 'panjang', 'lebar', 'tinggi', 'berat'] as const).map((f) => (
-                      <TD key={f}>
-                        <CellNumberInput
-                          value={item[f]}
-                          onChange={(v) => onUpdateItem(item.id, f, v)}
-                        />
-                      </TD>
-                    ))}
-                    <TD auto>{item.actualWeight}</TD>
-                    <TD auto>{item.volumetricWeight.toFixed(1)}</TD>
-                    <TD auto highlight>{item.chargeableWeight}</TD>
-                    <TD auto>{item.cbm.toFixed(3)}</TD>
-                    <td style={{ textAlign: 'center', padding: '4px' }}>
-                      <DeleteBtn onClick={() => onRemoveItem(item.id)} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {itemsCalculated.map((item, i) => (
+            <DimensionItemCard
+              key={item.id}
+              item={item}
+              index={i}
+              onUpdate={(f, v) => onUpdateItem(item.id, f, v)}
+              onRemove={() => onRemoveItem(item.id)}
+            />
+          ))}
           <AddButton label="Tambah Baris" onClick={onAddItem} />
         </>
       ) : (
@@ -233,20 +203,20 @@ export function Step2ItemDetails({
           </div>
           <div style={{ display: 'grid', gap: 12 }} className="card-grid-3">
             <NumberInput
-              label="Chargeable Weight (kg) ★"
+              label="Chargeable Weight (kg)"
               value={directInput.chargeableWeight}
               onChange={(v) => onUpdateDirect('chargeableWeight', v)}
               placeholder="0"
             />
             <NumberInput
-              label="CBM (m³)"
+              label="CBM (m3)"
               value={directInput.cbm}
               onChange={(v) => onUpdateDirect('cbm', v)}
               placeholder="0"
             />
             <div />
           </div>
-          <InfoNote>★ Chargeable Weight digunakan untuk perhitungan revenue</InfoNote>
+          <InfoNote>Chargeable Weight digunakan untuk perhitungan revenue</InfoNote>
         </div>
       )}
 
@@ -256,14 +226,12 @@ export function Step2ItemDetails({
         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
           Ringkasan Berat
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
-          <SummaryRow label="Total Koli" value={`${weightSummary.totalKoli} koli`} />
-          <SummaryRow label="Actual Weight" value={formatWeight(weightSummary.totalActualWeight)} />
-          <SummaryRow label="Volumetric Weight" value={formatWeight(weightSummary.totalVolumetricWeight, 1)} />
-          <SummaryRow label="Kubikasi (CBM)" value={formatCbm(weightSummary.totalCbm)} />
-        </div>
+        <SummaryRow label="Total Koli" value={`${weightSummary.totalKoli} koli`} />
+        <SummaryRow label="Actual Weight" value={formatWeight(weightSummary.totalActualWeight)} />
+        <SummaryRow label="Volumetric Weight" value={formatWeight(weightSummary.totalVolumetricWeight, 1)} />
+        <SummaryRow label="Kubikasi (CBM)" value={formatCbm(weightSummary.totalCbm)} />
         <SummaryRow
-          label="Chargeable Weight ★ (dipakai untuk revenue)"
+          label="Chargeable Weight (untuk revenue)"
           value={formatWeight(weightSummary.totalChargeableWeight, 0)}
           highlight
         />

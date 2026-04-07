@@ -5,7 +5,8 @@
       "Bash(npm --version)",
       "Bash(npx expo:*)",
       "Bash(npm init:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)"
     ],
     "additionalDirectories": [
       "c:\\laragon\\www\\estCost\\src"

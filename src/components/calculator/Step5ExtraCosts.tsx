@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, SectionHeader, InputField, NumberInput, AddButton, DeleteBtn, Divider } from '../ui';
+import { IconSquareRoundedPlus } from '@tabler/icons-react';
 import { CostItem } from '../../types';
 import { formatRp } from '../../utils/calculations';
 
@@ -18,10 +19,10 @@ export function Step5ExtraCosts({
 }) {
   return (
     <Card>
-      <SectionHeader icon="➕" title="Biaya Tambahan" subtitle="Opsional — asuransi, packaging, dll" />
+      <SectionHeader icon={<IconSquareRoundedPlus size={20} stroke={1.5} />} title="Biaya Tambahan" subtitle="Opsional — asuransi, packaging, dll" />
 
       {extraCosts.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 140px 36px', gap: 8, marginBottom: 4, alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr minmax(100px, 140px) 32px', gap: 8, marginBottom: 4, alignItems: 'center' }}>
           <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Deskripsi</span>
           <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Biaya (Rp)</span>
           <span />
@@ -29,7 +30,7 @@ export function Step5ExtraCosts({
       )}
 
       {extraCosts.map((item) => (
-        <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '1fr 140px 36px', gap: 8, marginBottom: 6, alignItems: 'center' }}>
+        <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '1fr minmax(100px, 140px) 32px', gap: 8, marginBottom: 6, alignItems: 'center' }}>
           <InputField
             value={item.deskripsi}
             onChange={(v) => onUpdate(item.id, 'deskripsi', v)}

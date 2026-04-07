@@ -32,7 +32,7 @@ export function saveToHistory(state: CalculatorState): void {
   if (!asalKotaId || !tujuanKotaId || !produkId) return;
 
   // Hanya simpan jika ada data bermakna (tarif > 0 atau ada leg costs)
-  const hasTariff = state.tariff.hargaPerKg > 0 || state.tariff.hargaPerKoli > 0;
+  const hasTariff = state.tariff.hargaPerKg > 0;
   const hasLegCosts =
     state.legs.firstMile.items.length > 0 ||
     state.legs.middleMile.items.length > 0 ||

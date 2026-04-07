@@ -2,6 +2,7 @@ import React from 'react';
 import { ComputedValues, ShippingInfo } from '../types';
 import { formatRp, formatWeight, formatCbm } from '../utils/calculations';
 import { TARGET_MARGIN } from '../data/masterdata';
+import { IconCircleCheck, IconAlertTriangle, IconCircleX } from '@tabler/icons-react';
 
 export function SummaryPanel({
   computed,
@@ -20,7 +21,11 @@ export function SummaryPanel({
     marginStatus === 'ok' ? '#16A34A' : marginStatus === 'warning' ? '#D97706' : '#DC2626';
   const statusBg =
     marginStatus === 'ok' ? '#DCFCE7' : marginStatus === 'warning' ? '#FEF3C7' : '#FEE2E2';
-  const statusIcon = marginStatus === 'ok' ? '✅' : marginStatus === 'warning' ? '⚠️' : '🔴';
+  const statusIcon = marginStatus === 'ok'
+    ? <IconCircleCheck size={16} stroke={2} color={statusColor} />
+    : marginStatus === 'warning'
+    ? <IconAlertTriangle size={16} stroke={2} color={statusColor} />
+    : <IconCircleX size={16} stroke={2} color={statusColor} />;
 
   const route =
     shippingInfo.asalKotaName && shippingInfo.tujuanKotaName
@@ -38,8 +43,8 @@ export function SummaryPanel({
     <div
       style={{
         position: 'sticky',
-        top: 76,
-        maxHeight: 'calc(100vh - 92px)',
+        top: 72,
+        maxHeight: 'calc(100vh - 88px)',
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
@@ -50,15 +55,15 @@ export function SummaryPanel({
       <div
         style={{
           background: 'white',
-          borderRadius: 'var(--radius-lg)',
-          padding: '14px 16px',
+          borderRadius: 'var(--radius-md)',
+          padding: '10px 12px',
           boxShadow: 'var(--shadow-card)',
         }}
       >
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+        <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>
           Route
         </div>
-        <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--text)', marginBottom: 6 }}>{route}</div>
+        <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--text)', marginBottom: 4 }}>{route}</div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {weightSummary.totalKoli > 0 && <Chip>{weightSummary.totalKoli} koli</Chip>}
           {weightSummary.totalChargeableWeight > 0 && (
@@ -72,19 +77,19 @@ export function SummaryPanel({
       <div
         style={{
           background: statusBg,
-          borderRadius: 'var(--radius-lg)',
-          padding: '16px',
+          borderRadius: 'var(--radius-md)',
+          padding: '12px',
           border: `2px solid ${statusColor}40`,
           textAlign: 'center',
         }}
       >
-        <div style={{ fontSize: 12, fontWeight: 600, color: statusColor, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>
+        <div style={{ fontSize: 10, fontWeight: 600, color: statusColor, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 2 }}>
           Margin %
         </div>
-        <div style={{ fontSize: 40, fontWeight: 900, color: statusColor, lineHeight: 1.1 }}>
+        <div style={{ fontSize: 32, fontWeight: 900, color: statusColor, lineHeight: 1.1 }}>
           {marginPct.toFixed(1)}%
         </div>
-        <div style={{ fontSize: 11, color: statusColor, marginTop: 4, fontWeight: 500 }}>
+        <div style={{ fontSize: 10, color: statusColor, marginTop: 3, fontWeight: 500 }}>
           Target: {TARGET_MARGIN}%
         </div>
       </div>
@@ -116,14 +121,14 @@ export function SummaryPanel({
         style={{
           background: statusBg,
           border: `1px solid ${statusColor}40`,
-          borderRadius: 'var(--radius-md)',
-          padding: '10px 14px',
+          borderRadius: 'var(--radius-sm)',
+          padding: '8px 10px',
           display: 'flex',
-          gap: 8,
+          gap: 6,
           alignItems: 'flex-start',
         }}
       >
-        <span style={{ fontSize: 16, flexShrink: 0 }}>{statusIcon}</span>
+        <span style={{ flexShrink: 0, display: 'flex' }}>{statusIcon}</span>
         <span style={{ fontSize: 12, color: statusColor, fontWeight: 600, lineHeight: 1.5 }}>
           {statusMsg}
         </span>
@@ -133,12 +138,12 @@ export function SummaryPanel({
       <div
         style={{
           background: 'white',
-          borderRadius: 'var(--radius-md)',
-          padding: '14px 16px',
+          borderRadius: 'var(--radius-sm)',
+          padding: '10px 12px',
           boxShadow: 'var(--shadow-card)',
         }}
       >
-        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
           Biaya per Leg
         </div>
         <LegBar label="First Mile" amount={subtotalFirstMile} total={totalCost} color="#2563EB" />
@@ -186,22 +191,22 @@ function MetricCard({
     <div
       style={{
         background: 'white',
-        borderRadius: 'var(--radius-md)',
-        padding: '12px 14px',
+        borderRadius: 'var(--radius-sm)',
+        padding: '8px 10px',
         boxShadow: 'var(--shadow-card)',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        gap: 8,
+        gap: 6,
       }}
     >
-      <div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 2 }}>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.4px', marginBottom: 1 }}>
           {label}
         </div>
-        {note && <div style={{ fontSize: 10, color: 'var(--text-muted)' }}>{note}</div>}
+        {note && <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>{note}</div>}
       </div>
-      <div style={{ fontSize: 15, fontWeight: 800, color: valueColor, textAlign: 'right', whiteSpace: 'nowrap' }}>
+      <div style={{ fontSize: 13, fontWeight: 800, color: valueColor, textAlign: 'right', whiteSpace: 'nowrap' }}>
         {value}
       </div>
     </div>

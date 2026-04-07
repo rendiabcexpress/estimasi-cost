@@ -75,8 +75,8 @@ export function computeAll(state: CalculatorState): ComputedValues {
 
   // 3. Revenue
   const revenueBerat = totalChargeableWeight * state.tariff.hargaPerKg;
-  const revenueKoli = totalKoli * state.tariff.hargaPerKoli;
-  const totalRevenue = revenueBerat + revenueKoli;
+  const revenueKoli = 0;
+  const totalRevenue = revenueBerat;
 
   // 4. Biaya operasional per leg
   const subtotalFirstMile = state.legs.firstMile.items.reduce((s, i) => s + i.biaya, 0);
@@ -96,10 +96,10 @@ export function computeAll(state: CalculatorState): ComputedValues {
   // 7. Saran pencapaian target 40%
   // Revenue minimum = totalCost / (1 - 0.40)
   const minRevenueFor40 = totalCost > 0 ? totalCost / (1 - TARGET_MARGIN / 100) : 0;
-  // Harga/kg minimum = (minRevenue - revenueKoli) / CW
+  // Harga/kg minimum = minRevenue / CW
   const minHargaKgFor40 =
     totalChargeableWeight > 0
-      ? (minRevenueFor40 - revenueKoli) / totalChargeableWeight
+      ? minRevenueFor40 / totalChargeableWeight
       : 0;
   // Pengurangan cost = totalCost - (totalRevenue * (1 - 0.40))
   const costReductionFor40 = totalCost - totalRevenue * (1 - TARGET_MARGIN / 100);

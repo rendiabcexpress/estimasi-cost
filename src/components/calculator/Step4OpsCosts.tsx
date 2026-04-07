@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, SectionHeader } from '../ui';
+import { IconTruckDelivery, IconCircleFilled } from '@tabler/icons-react';
 import { LegSection } from './LegSection';
 import { CalculatorState, CostItem } from '../../types';
 import { formatRp } from '../../utils/calculations';
@@ -29,10 +30,10 @@ export function Step4OpsCosts({
 }: Props) {
   return (
     <Card>
-      <SectionHeader icon="🚚" title="Biaya Operasional" />
+      <SectionHeader icon={<IconTruckDelivery size={20} stroke={1.5} />} title="Biaya Operasional" />
 
       <LegSection
-        icon="🔵" label="First Mile" color="#3B82F6"
+        icon={<IconCircleFilled size={10} />} label="First Mile" color="#3B82F6"
         leg={legs.firstMile} subtotal={subtotalFirstMile}
         onVendorChange={(v) => onVendorChange('firstMile', v)}
         onAddItem={() => onAddItem('firstMile')}
@@ -40,7 +41,7 @@ export function Step4OpsCosts({
         onRemoveItem={(id) => onRemoveItem('firstMile', id)}
       />
       <LegSection
-        icon="🟣" label="Middle Mile" color="#8B5CF6"
+        icon={<IconCircleFilled size={10} />} label="Middle Mile" color="#8B5CF6"
         leg={legs.middleMile} subtotal={subtotalMiddleMile}
         onVendorChange={(v) => onVendorChange('middleMile', v)}
         onAddItem={() => onAddItem('middleMile')}
@@ -48,7 +49,7 @@ export function Step4OpsCosts({
         onRemoveItem={(id) => onRemoveItem('middleMile', id)}
       />
       <LegSection
-        icon="🟢" label="Last Mile" color="#10B981"
+        icon={<IconCircleFilled size={10} />} label="Last Mile" color="#10B981"
         leg={legs.lastMile} subtotal={subtotalLastMile}
         onVendorChange={(v) => onVendorChange('lastMile', v)}
         onAddItem={() => onAddItem('lastMile')}

@@ -35,7 +35,11 @@
   --shadow-sticky: 0 -4px 20px rgba(15,23,42,0.12);
 }
 
-html, body {
+html {
+  overflow-x: clip;
+}
+
+body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
   background: var(--bg);
@@ -51,6 +55,7 @@ html, body {
 input, textarea, select {
   font-family: inherit;
   font-size: 14px;
+  max-width: 100%;
 }
 
 button {
@@ -78,21 +83,41 @@ button {
   grid-template-columns: 1fr 1fr 1fr;
 }
 
+/* Dimension input: 5 cols desktop */
+.card-grid-dim-input {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+/* Dimension result: 4 cols desktop */
+.card-grid-dim-result {
+  grid-template-columns: repeat(4, 1fr);
+}
+
 .layout-grid {
   display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
   align-items: start;
+}
+
+/* Medium screens — narrower summary */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .layout-grid {
+    grid-template-columns: 1fr 280px;
+    gap: 16px;
+  }
 }
 
 @media (max-width: 768px) {
   .layout-grid {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   /* Tambah padding bawah saat mobile untuk sticky bar */
   .mobile-scroll-pad {
-    padding-bottom: 140px;
+    padding-bottom: 160px;
+    overflow: hidden;
   }
 
   /* Sembunyikan sidebar di mobile */
@@ -109,9 +134,38 @@ button {
     grid-template-columns: 1fr 1fr !important;
   }
 
-  /* Kurangi padding card di mobile */
-  .mobile-pad {
-    padding: 16px !important;
+  /* Card padding di mobile */
+  .est-card {
+    padding: 14px !important;
+  }
+
+  .est-card-inner {
+    padding: 10px !important;
+  }
+
+  /* Dimension input: 3+2 rows on mobile */
+  .card-grid-dim-input {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  /* Dimension result: 2 cols on mobile */
+  .card-grid-dim-result {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Small phones */
+@media (max-width: 400px) {
+  .card-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .card-grid-dim-input {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .card-grid-dim-result {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }
 
@@ -119,5 +173,161 @@ button {
   /* Sembunyikan sticky bar mobile di desktop */
   .mobile-only {
     display: none !important;
+  }
+}
+
+/* ─── Screen: hide print view ─────────────────────────────────────────────── */
+.print-view { display: none; }
+
+/* ─── Print Styles ────────────────────────────────────────────────────────── */
+@media print {
+  *, *::before, *::after { box-shadow: none !important; }
+
+  html, body, #root {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    overflow: visible !important;
+  }
+
+  .screen-only { display: none !important; }
+  .print-view { display: block !important; }
+
+  @page { size: A4; margin: 0; }
+
+  /* ── Print View Base ── */
+  .pv {
+    background: white;
+    color: #1a1a1a;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 9.5px;
+    line-height: 1.4;
+    padding: 0 12mm;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .pv-content { flex: 1; }
+
+  /* ── Kop Surat Header (image) ── */
+  .pv-kop-header-img {
+    display: block;
+    width: 100vw;
+    margin: 0 -12mm 8px;
+    height: auto;
+  }
+
+  /* ── Document Title ── */
+  .pv-doc-title-row {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 2px;
+  }
+  .pv-doc-title {
+    font-size: 14px; font-weight: 900; color: #1B3A6B;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .pv-doc-sub { font-size: 9px; color: #888; font-style: italic; }
+  .pv-doc-meta { text-align: right; font-size: 9.5px; }
+  .pv-doc-ref { color: #888; font-size: 8.5px; }
+
+  .pv-divider {
+    height: 2px;
+    background: linear-gradient(90deg, #1B3A6B, #6EAC3D);
+    margin: 4px 0 8px;
+  }
+
+  /* ── Section Title ── */
+  .pv-sec {
+    font-size: 10px; font-weight: 700; color: #1B3A6B;
+    margin: 10px 0 4px; padding: 2px 6px;
+    background: #f0f4e8; border-left: 3px solid #6EAC3D;
+  }
+
+  /* ── Detail Table ── */
+  .pv-detail {
+    width: 100%; border-collapse: collapse; font-size: 9.5px; margin-bottom: 2px;
+  }
+  .pv-detail td { border: 1px solid #d0d0d0; padding: 3px 6px; }
+  .pv-dl { background: #f8f6f2; color: #555; font-weight: 600; width: 22%; }
+  .pv-dv { font-weight: 600; }
+  .pv-cw { color: #2563EB; font-weight: 800; background: #EFF6FF; }
+
+  /* ── Data Tables ── */
+  .pv-tbl {
+    width: 100%; border-collapse: collapse; font-size: 9.5px; margin-bottom: 2px;
+  }
+  .pv-tbl th {
+    background: #1B3A6B; color: white; border: 1px solid #1B3A6B;
+    padding: 4px 6px; text-align: left; font-weight: 600;
+    font-size: 8.5px; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .pv-tbl td { border: 1px solid #ddd; padding: 3px 6px; }
+  .pv-tbl th:last-child,
+  .pv-tbl td:last-child { text-align: right; }
+  .pv-tbl tbody tr:nth-child(even) td { background: #fafafa; }
+  .pv-bold { font-weight: 700; }
+  .pv-green { color: #16A34A; }
+
+  /* Total & Profit rows */
+  .pv-row-total td {
+    background: #f0f4e8 !important; border-top: 2px solid #6EAC3D;
+    font-weight: 700; padding: 5px 6px; font-size: 10px;
+  }
+  .pv-row-profit td {
+    background: #1B3A6B !important; color: white !important;
+    font-weight: 800; padding: 5px 6px; font-size: 10.5px;
+    border: 1px solid #1B3A6B;
+  }
+
+  /* ── Section 4: Flex layout ── */
+  .pv-s4 { display: flex; gap: 8px; align-items: stretch; }
+  .pv-s4-tbl { flex: 1; margin-bottom: 0 !important; }
+  .pv-leg-dot {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 2px; margin-right: 4px; vertical-align: middle;
+  }
+
+  /* Margin box */
+  .pv-mbox {
+    flex: 0 0 170px; border: 2px solid #e0e0e0; border-radius: 6px;
+    padding: 8px 10px; text-align: center;
+    background: linear-gradient(180deg, #fafafa 0%, #f0f0f0 100%);
+  }
+  .pv-mbox-head {
+    font-size: 7.5px; font-weight: 700; color: #999;
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;
+  }
+  .pv-mbox-amount { font-size: 14px; font-weight: 900; line-height: 1.15; }
+  .pv-mbox-pct { font-size: 22px; font-weight: 900; line-height: 1.05; margin-bottom: 4px; }
+  .pv-mbox-bar {
+    position: relative; height: 8px; background: #e0e0e0;
+    border-radius: 4px; overflow: visible; margin-bottom: 3px;
+  }
+  .pv-mbox-bar-fill { height: 100%; border-radius: 4px; }
+  .pv-mbox-bar-target {
+    position: absolute; top: -2px; width: 2px; height: 12px; background: #333;
+  }
+  .pv-mbox-target { font-size: 7px; color: #999; margin-bottom: 3px; }
+  .pv-mbox-badge {
+    display: inline-block; font-size: 7.5px; font-weight: 800;
+    padding: 2px 8px; border-radius: 3px; letter-spacing: 0.3px;
+  }
+
+  /* ── Section 5: Two-column ── */
+  .pv-s5 { display: flex; gap: 8px; }
+  .pv-s5-tbl { flex: 1; margin-bottom: 0 !important; }
+  .pv-eff-highlight td {
+    background: #f0f4e8 !important; border-top: 1.5px solid #6EAC3D;
+  }
+
+  /* ── Kop Surat Footer (image) ── */
+  .pv-kop-footer {
+    margin-top: auto;
+  }
+  .pv-kop-footer-img {
+    display: block;
+    width: 100vw;
+    margin: 0 -12mm;
+    height: auto;
   }
 }
