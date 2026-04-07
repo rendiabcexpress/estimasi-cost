@@ -37,8 +37,7 @@ export function PrintView({
     <div className="print-view">
       <div className="pv">
 
-        {/* ════════ KOP SURAT HEADER ════════ */}
-        <img src="/kop/header.png" alt="ABC Express" className="pv-kop-header-img" />
+        {/* Header removed — no kop surat image */}
 
         <div className="pv-content">
         {/* ════════ DOCUMENT TITLE ════════ */}
@@ -232,12 +231,26 @@ export function PrintView({
           </tfoot>
         </table>
 
-        </div>{/* end pv-content */}
-
-        {/* ════════ KOP SURAT FOOTER ════════ */}
-        <div className="pv-kop-footer">
-          <img src="/kop/footer.png" alt="Footer" className="pv-kop-footer-img" />
+        {/* ════════ Tanda Tangan ════════ */}
+        <div className="pv-signatures">
+          <div className="pv-sig">
+            <div className="pv-sig-title">Dibuat Oleh :</div>
+            <div className="pv-sig-space" />
+            <div className="pv-sig-line" />
+          </div>
+          <div className="pv-sig">
+            <div className="pv-sig-title">Diperiksa Oleh :</div>
+            <div className="pv-sig-space" />
+            <div className="pv-sig-line" />
+          </div>
+          <div className="pv-sig">
+            <div className="pv-sig-title">Disetujui Oleh :</div>
+            <div className="pv-sig-space" />
+            <div className="pv-sig-line" />
+          </div>
         </div>
+
+        </div>{/* end pv-content */}
       </div>
     </div>
   );

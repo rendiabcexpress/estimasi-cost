@@ -193,7 +193,7 @@ button {
   .screen-only { display: none !important; }
   .print-view { display: block !important; }
 
-  @page { size: A4; margin: 0; }
+  @page { size: A4; margin: 12mm; }
 
   /* ── Print View Base ── */
   .pv {
@@ -202,20 +202,8 @@ button {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 9.5px;
     line-height: 1.4;
-    padding: 0 12mm;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
   }
-  .pv-content { flex: 1; }
-
-  /* ── Kop Surat Header (image) ── */
-  .pv-kop-header-img {
-    display: block;
-    width: 100vw;
-    margin: 0 -12mm 8px;
-    height: auto;
-  }
+  .pv-content { }
 
   /* ── Document Title ── */
   .pv-doc-title-row {
@@ -320,14 +308,29 @@ button {
     background: #f0f4e8 !important; border-top: 1.5px solid #6EAC3D;
   }
 
-  /* ── Kop Surat Footer (image) ── */
-  .pv-kop-footer {
-    margin-top: auto;
+  /* ── Signatures ── */
+  .pv-signatures {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1.5px solid #ddd;
   }
-  .pv-kop-footer-img {
-    display: block;
-    width: 100vw;
-    margin: 0 -12mm;
-    height: auto;
+  .pv-sig {
+    flex: 1;
+    text-align: left;
+  }
+  .pv-sig-title {
+    font-size: 9px;
+    font-weight: 700;
+    color: #1B3A6B;
+  }
+  .pv-sig-space {
+    height: 80px;
+  }
+  .pv-sig-line {
+    border-bottom: 1px solid #333;
+    margin: 0;
   }
 }
