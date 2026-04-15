@@ -200,16 +200,20 @@ export function NumberInput({
   onChange,
   placeholder = '0',
   prefix,
+  suffix,
   style,
   currency = false,
+  disabled = false,
 }: {
   label?: string;
   value: number;
   onChange: (v: number) => void;
   placeholder?: string;
   prefix?: string;
+  suffix?: string;
   style?: React.CSSProperties;
   currency?: boolean;
+  disabled?: boolean;
 }) {
   const handleChange = useCallback(
     (v: string) => {
@@ -228,10 +232,12 @@ export function NumberInput({
       <InputField
         label={label}
         value={value > 0 ? String(value) : ''}
-        onChange={handleChange}
+        onChange={disabled ? undefined : handleChange}
         type="number"
         placeholder={placeholder}
         prefix={prefix}
+        suffix={suffix}
+        readOnly={disabled}
         style={style}
       />
     );
@@ -243,11 +249,13 @@ export function NumberInput({
     <InputField
       label={label}
       value={display}
-      onChange={handleChange}
+      onChange={disabled ? undefined : handleChange}
       type="text"
       inputMode="numeric"
       placeholder={placeholder}
       prefix={prefix}
+      suffix={suffix}
+      readOnly={disabled}
       style={style}
     />
   );

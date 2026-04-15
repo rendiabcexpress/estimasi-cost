@@ -43,7 +43,7 @@ function CitySelect({
 }: {
   label: string;
   value: { id: number | null; name: string };
-  onChange: (city: City) => void;
+  onChange: (city: { id: number | null; name: string; province_name?: string }) => void;
 }) {
   const [query, setQuery] = useState(value.name);
   const [cities, setCities] = useState<City[]>([]);
@@ -85,7 +85,7 @@ function CitySelect({
     setQuery(value.name);
   }, [value.name]);
 
-  const handleSelect = (city: City) => {
+  const handleSelect = (city: { id: number | null; name: string; province_name?: string }) => {
     onChange(city);
     setQuery(city.name);
     setOpen(false);
@@ -133,7 +133,28 @@ function CitySelect({
             <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--text-secondary)' }}>Memuat...</div>
           )}
           {!loading && fetchError && (
-            <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--danger)' }}>Gagal memuat data — periksa koneksi server</div>
+            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 13, color: 'var(--danger)', marginBottom: 8 }}>
+                Gagal memuat data kota dari server
+              </div>
+              {query.trim() && (
+                <button
+                  onMouseDown={() => handleSelect({ id: null, name: query.trim() })}
+                  style={{
+                    border: '1px solid var(--primary)',
+                    background: 'var(--primary-light)',
+                    color: 'var(--primary)',
+                    borderRadius: 8,
+                    padding: '6px 10px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Gunakan "{query.trim()}" sebagai kota manual
+                </button>
+              )}
+            </div>
           )}
           {!loading && !fetchError && cities.length === 0 && (
             <div style={{ padding: '12px 14px', fontSize: 13, color: 'var(--text-secondary)' }}>Kota tidak ditemukan</div>
@@ -392,3 +413,4 @@ export function Step1ShippingInfo({
     </Card>
   );
 }
+

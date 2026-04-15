@@ -12,7 +12,8 @@ export function PrintView({
   const { shippingInfo, tariff, legs, extraCosts } = state;
   const {
     weightSummary, totalRevenue, subtotalFirstMile, subtotalMiddleMile,
-    subtotalLastMile, totalExtraCost, totalCost, margin,
+    subtotalLastMile, totalExtraCost, discountCostNominal,
+    targetDiscountFor40, discountGapFor40, totalCost, margin,
     marginPct, marginStatus,
   } = computed;
 
@@ -190,6 +191,14 @@ export function PrintView({
               <td>Rp {formatRp(tariff.hargaPerKg)}</td>
               <td className="pv-bold pv-green">Rp {formatRp(totalRevenue)}</td>
             </tr>
+            {discountCostNominal > 0 && (
+              <tr>
+                <td>Diskon Revenue</td>
+                <td>{state.discountCostPct}% dari revenue bruto</td>
+                <td>-</td>
+                <td style={{ color: '#16A34A' }}>-Rp {formatRp(discountCostNominal)}</td>
+              </tr>
+            )}
           </tbody>
         </table>
 
@@ -220,6 +229,12 @@ export function PrintView({
             ))}
           </tbody>
           <tfoot>
+            {discountCostNominal > 0 && (
+              <tr>
+                <td colSpan={2}>MAKS DISKON UNTUK MARGIN 40%</td>
+                <td>Rp {formatRp(targetDiscountFor40)}</td>
+              </tr>
+            )}
             <tr className="pv-row-total">
               <td colSpan={2}>TOTAL OPERATIONAL COST</td>
               <td>Rp {formatRp(totalCost)}</td>
@@ -228,6 +243,14 @@ export function PrintView({
               <td colSpan={2}>PROFIT / MARGIN</td>
               <td style={{ color: statusColor }}>Rp {formatRp(margin)}</td>
             </tr>
+            {discountCostNominal > 0 && (
+              <tr>
+                <td colSpan={2}>STATUS TARGET MARGIN 40% (SETELAH DISKON)</td>
+                <td style={{ color: discountGapFor40 <= 0 ? '#16A34A' : '#D97706' }}>
+                  {discountGapFor40 <= 0 ? 'Tercapai' : `Diskon berlebih Rp ${formatRp(discountGapFor40)}`}
+                </td>
+              </tr>
+            )}
           </tfoot>
         </table>
 
@@ -269,4 +292,3 @@ function LegRow({ label, amount, total, color }: { label: string; amount: number
     </tr>
   );
 }
-

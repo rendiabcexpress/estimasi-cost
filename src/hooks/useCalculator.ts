@@ -45,6 +45,7 @@ const DEFAULT_STATE: CalculatorState = {
     lastMile: { vendor: '', items: [] },
   },
   extraCosts: [],
+  discountCostPct: 0,
 };
 
 export function useCalculator() {
@@ -195,6 +196,11 @@ export function useCalculator() {
     }));
   }, []);
 
+  // --- Cost Discount (%) ---
+  const setDiscountCostPct = useCallback((value: number) => {
+    setState((s) => ({ ...s, discountCostPct: value }));
+  }, []);
+
   // --- Auto-fill: fetch rate saat asal+tujuan+produk lengkap ---
   useEffect(() => {
     const { asalKotaId, tujuanKotaId, produkId } = state.shippingInfo;
@@ -302,6 +308,7 @@ export function useCalculator() {
     addExtraCost,
     updateExtraCost,
     removeExtraCost,
+    setDiscountCostPct,
     reset,
   };
 }

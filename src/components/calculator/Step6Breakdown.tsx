@@ -17,10 +17,12 @@ export function Step6Breakdown({
 
   const {
     marginStatus, marginPct, margin, totalRevenue, totalCost,
-    revenueBerat, revenueKoli, subtotalFirstMile, subtotalMiddleMile,
-    subtotalLastMile, totalOpsCost, totalExtraCost, weightSummary,
+    revenueBerat, subtotalFirstMile, subtotalMiddleMile,
+    subtotalLastMile, totalOpsCost, totalExtraCost,
+    discountCostNominal, targetDiscountFor40, discountGapFor40, weightSummary,
     minHargaKgFor40, costReductionFor40, minRevenueFor40,
   } = computed;
+  const grossRevenue = totalRevenue + discountCostNominal;
 
   const colors = {
     ok: { fg: 'var(--success)', bg: 'var(--success-light)', border: 'rgba(39,174,96,0.25)' },
@@ -38,7 +40,6 @@ export function Step6Breakdown({
     <Card>
       <SectionHeader icon={<IconChartBar size={20} stroke={1.5} />} title="Hasil Estimasi Margin" />
 
-      {/* Alert */}
       <div style={{ display: 'flex', gap: 12, padding: 16, background: c.bg, borderRadius: 'var(--radius-md)', border: `1px solid ${c.border}`, marginBottom: 16 }}>
         <span style={{ flexShrink: 0, display: 'flex' }}>{icon}</span>
         <div style={{ flex: 1 }}>
@@ -56,6 +57,7 @@ export function Step6Breakdown({
                 <AlertRow label="Revenue minimum" value={`Rp ${formatRp(minRevenueFor40)}`} color={c.fg} />
                 <AlertRow label="Harga/kg minimum" value={`Rp ${formatRp(minHargaKgFor40)}`} color={c.fg} />
                 <AlertRow label="Atau kurangi cost" value={`Rp ${formatRp(costReductionFor40)}`} color={c.fg} />
+                <AlertRow label="Maks diskon agar margin 40%" value={`Rp ${formatRp(targetDiscountFor40)}`} color={c.fg} />
               </div>
             </>
           ) : (
@@ -66,44 +68,50 @@ export function Step6Breakdown({
                 <AlertRow label="Kerugian" value={`Rp ${formatRp(Math.abs(margin))}`} color={c.fg} />
                 <AlertRow label="Revenue minimum (40%)" value={`Rp ${formatRp(minRevenueFor40)}`} color={c.fg} />
                 <AlertRow label="Harga/kg minimum" value={`Rp ${formatRp(minHargaKgFor40)}`} color={c.fg} />
+                <AlertRow label="Maks diskon agar margin 40%" value={`Rp ${formatRp(targetDiscountFor40)}`} color={c.fg} />
               </div>
             </>
           )}
         </div>
       </div>
 
-      {/* Detail Breakdown */}
-      <CollapseSection title="Detail Breakdown" open={showBreakdown} onToggle={() => setShowBreakdown(v => !v)}>
+      <CollapseSection title="Detail Breakdown" open={showBreakdown} onToggle={() => setShowBreakdown((v) => !v)}>
         <div style={{ background: 'var(--card-inner)', borderRadius: 'var(--radius-md)', padding: 16, border: '1px solid var(--border)', fontSize: 13 }}>
           <BdGroup label="REVENUE" amount={totalRevenue} color="var(--success)">
             <BdRow label={`${weightSummary.totalChargeableWeight}kg x Rp${formatRp(state.tariff.hargaPerKg)}/kg`} amount={revenueBerat} indent={1} />
+            {discountCostNominal > 0 && <BdRow label={`Diskon ${state.discountCostPct}%`} amount={discountCostNominal} indent={1} negative />}
           </BdGroup>
           <BdGroup label="BIAYA OPERASIONAL" amount={totalOpsCost} color="var(--danger)">
             <BdRow label={`First Mile${state.legs.firstMile.vendor ? ` (${state.legs.firstMile.vendor})` : ''}`} amount={subtotalFirstMile} indent={1} />
-            {state.legs.firstMile.items.map(i => <BdRow key={i.id} label={i.deskripsi || '—'} amount={i.biaya} indent={2} />)}
+            {state.legs.firstMile.items.map((i) => <BdRow key={i.id} label={i.deskripsi || '-'} amount={i.biaya} indent={2} />)}
             <BdRow label={`Middle Mile${state.legs.middleMile.vendor ? ` (${state.legs.middleMile.vendor})` : ''}`} amount={subtotalMiddleMile} indent={1} />
-            {state.legs.middleMile.items.map(i => <BdRow key={i.id} label={i.deskripsi || '—'} amount={i.biaya} indent={2} />)}
+            {state.legs.middleMile.items.map((i) => <BdRow key={i.id} label={i.deskripsi || '-'} amount={i.biaya} indent={2} />)}
             <BdRow label={`Last Mile${state.legs.lastMile.vendor ? ` (${state.legs.lastMile.vendor})` : ''}`} amount={subtotalLastMile} indent={1} />
-            {state.legs.lastMile.items.map(i => <BdRow key={i.id} label={i.deskripsi || '—'} amount={i.biaya} indent={2} />)}
+            {state.legs.lastMile.items.map((i) => <BdRow key={i.id} label={i.deskripsi || '-'} amount={i.biaya} indent={2} />)}
           </BdGroup>
           {totalExtraCost > 0 && (
             <BdGroup label="BIAYA TAMBAHAN" amount={totalExtraCost} color="var(--warning)">
-              {state.extraCosts.map(i => <BdRow key={i.id} label={i.deskripsi || '—'} amount={i.biaya} indent={1} />)}
+              {state.extraCosts.map((i) => <BdRow key={i.id} label={i.deskripsi || '-'} amount={i.biaya} indent={1} />)}
             </BdGroup>
           )}
           <Divider my={10} />
-          <div className="card-grid-3" style={{ display: 'grid', gap: 8 }}>
+          <div style={{ marginBottom: 10, fontSize: 12, color: discountGapFor40 <= 0 ? 'var(--success)' : 'var(--warning)', fontWeight: 700 }}>
+            {discountGapFor40 <= 0
+              ? `Target margin 40% setelah diskon tercapai.`
+              : `Diskon melebihi batas aman. Kurangi diskon Rp ${formatRp(discountGapFor40)} agar margin tetap 40% (maks Rp ${formatRp(targetDiscountFor40)}).`}
+          </div>
+          <div className="card-grid-3" style={{ display: 'grid', gap: 8, marginBottom: 8 }}>
+            <FinalCard label="Revenue Bruto" value={`Rp ${formatRp(grossRevenue)}`} color="var(--text)" />
             <FinalCard label="Total Cost" value={`Rp ${formatRp(totalCost)}`} color="var(--danger)" />
             <FinalCard label="Margin" value={`Rp ${formatRp(margin)}`} color={marginStatus === 'ok' ? 'var(--success)' : 'var(--warning)'} />
-            <FinalCard label="Margin %" value={`${marginPct.toFixed(2)}%`} color={c.fg} bg={c.bg} large />
           </div>
+          <FinalCard label="Margin %" value={`${marginPct.toFixed(2)}%`} color={c.fg} bg={c.bg} large />
         </div>
       </CollapseSection>
 
       <Divider my={16} />
 
-      {/* Ringkasan Berat */}
-      <CollapseSection title="Ringkasan Berat & Efisiensi" open={showWeight} onToggle={() => setShowWeight(v => !v)}>
+      <CollapseSection title="Ringkasan Berat & Efisiensi" open={showWeight} onToggle={() => setShowWeight((v) => !v)}>
         <div style={{ background: 'var(--card-inner)', borderRadius: 'var(--radius-md)', padding: 16, border: '1px solid var(--border)' }}>
           {[
             ['Total Koli', `${weightSummary.totalKoli} koli`],
@@ -121,7 +129,6 @@ export function Step6Breakdown({
   );
 }
 
-// Sub-components
 function AlertRow({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color, padding: '3px 0', borderBottom: `1px solid ${color}20` }}>
@@ -148,20 +155,23 @@ function BdGroup({ label, amount, color, children }: { label: string; amount: nu
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
         <span style={{ fontSize: 11, fontWeight: 800, color, textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>{label}</span>
-        <span style={{ fontWeight: 700, color }}>Rp {formatRp(amount)}</span>
+        <span style={{ fontWeight: 700, color }}>{label === 'DISKON BIAYA' ? '-Rp ' : 'Rp '}{formatRp(amount)}</span>
       </div>
       {children}
     </div>
   );
 }
 
-function BdRow({ label, amount, indent = 0 }: { label: string; amount: number; indent?: number }) {
+function BdRow({ label, amount, indent = 0, negative = false }: { label: string; amount: number; indent?: number; negative?: boolean }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: indent * 16, paddingTop: 2, paddingBottom: 2 }}>
       <span style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
-        {indent === 1 ? '├─ ' : indent === 2 ? '│  └─ ' : ''}{label}
+        {indent === 1 ? '|- ' : indent === 2 ? '|  `- ' : ''}{label}
       </span>
-      <span style={{ fontWeight: 600, fontSize: 12 }}>Rp {formatRp(amount)}</span>
+      <span style={{ fontWeight: 600, fontSize: 12, color: negative ? 'var(--success)' : 'var(--text)' }}>
+        {negative ? '-Rp ' : 'Rp '}
+        {formatRp(amount)}
+      </span>
     </div>
   );
 }

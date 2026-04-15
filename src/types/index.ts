@@ -75,6 +75,7 @@ export interface CalculatorState {
     lastMile: Leg;
   };
   extraCosts: CostItem[];
+  discountCostPct: number;
 }
 
 export interface ComputedValues {
@@ -88,10 +89,15 @@ export interface ComputedValues {
   subtotalLastMile: number;
   totalOpsCost: number;
   totalExtraCost: number;
+  totalCostBeforeDiscount: number;
+  discountCostNominal: number;
   totalCost: number;
   margin: number;
   marginPct: number;
   marginStatus: MarginStatus;
+  targetDiscountFor40: number;
+  targetDiscountPctFor40: number;
+  discountGapFor40: number;
   minRevenueFor40: number;
   minHargaKgFor40: number;
   costReductionFor40: number;

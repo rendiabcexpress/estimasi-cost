@@ -14,7 +14,8 @@ export function SummaryPanel({
   const {
     totalRevenue, totalCost, margin, marginPct, marginStatus,
     weightSummary, subtotalFirstMile, subtotalMiddleMile, subtotalLastMile,
-    totalOpsCost, totalExtraCost, minHargaKgFor40, costReductionFor40, minRevenueFor40,
+    totalOpsCost, totalExtraCost, discountCostNominal,
+    minHargaKgFor40, costReductionFor40, minRevenueFor40,
   } = computed;
 
   const statusColor =
@@ -29,7 +30,7 @@ export function SummaryPanel({
 
   const route =
     shippingInfo.asalKotaName && shippingInfo.tujuanKotaName
-      ? `${shippingInfo.asalKotaName} → ${shippingInfo.tujuanKotaName}`
+      ? `${shippingInfo.asalKotaName} -> ${shippingInfo.tujuanKotaName}`
       : 'Belum ada route';
 
   const statusMsg =
@@ -51,7 +52,6 @@ export function SummaryPanel({
         gap: 10,
       }}
     >
-      {/* Route header */}
       <div
         style={{
           background: 'white',
@@ -73,7 +73,6 @@ export function SummaryPanel({
         </div>
       </div>
 
-      {/* Margin % — big card */}
       <div
         style={{
           background: statusBg,
@@ -94,13 +93,12 @@ export function SummaryPanel({
         </div>
       </div>
 
-      {/* 3 summary cards */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
         <MetricCard
           label="Est. Revenue"
           value={`Rp ${formatRp(totalRevenue)}`}
           valueColor="var(--success)"
-          note={`${formatWeight(weightSummary.totalChargeableWeight, 0)} CW × tarif`}
+          note={`${formatWeight(weightSummary.totalChargeableWeight, 0)} CW x tarif - diskon Rp ${formatRp(discountCostNominal)}`}
         />
         <MetricCard
           label="Total Cost"
@@ -112,11 +110,10 @@ export function SummaryPanel({
           label="Est. Margin"
           value={`Rp ${formatRp(margin)}`}
           valueColor={marginStatus === 'ok' ? 'var(--success)' : marginStatus === 'warning' ? 'var(--warning)' : 'var(--danger)'}
-          note="Revenue − Total Cost"
+          note="Revenue - Total Cost"
         />
       </div>
 
-      {/* Status message */}
       <div
         style={{
           background: statusBg,
@@ -134,7 +131,6 @@ export function SummaryPanel({
         </span>
       </div>
 
-      {/* Cost breakdown mini */}
       <div
         style={{
           background: 'white',
@@ -157,7 +153,6 @@ export function SummaryPanel({
   );
 }
 
-// Sub-components
 function Chip({ children, primary }: { children: React.ReactNode; primary?: boolean }) {
   return (
     <span

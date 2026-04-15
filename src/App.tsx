@@ -216,9 +216,17 @@ export default function App() {
             <Step5ExtraCosts
               extraCosts={calc.state.extraCosts}
               totalExtraCost={calc.computed.totalExtraCost}
+              discountCostPct={calc.state.discountCostPct}
+              discountCostNominal={calc.computed.discountCostNominal}
+              totalCostBeforeDiscount={calc.computed.totalRevenue + calc.computed.discountCostNominal}
+              totalCost={calc.computed.totalRevenue}
+              targetDiscountFor40={calc.computed.targetDiscountFor40}
+              targetDiscountPctFor40={calc.computed.targetDiscountPctFor40}
+              discountGapFor40={calc.computed.discountGapFor40}
               onAdd={calc.addExtraCost}
               onUpdate={calc.updateExtraCost}
               onRemove={calc.removeExtraCost}
+              onChangeDiscountPct={calc.setDiscountCostPct}
             />
             <Step6Breakdown computed={calc.computed} state={calc.state} />
           </div>

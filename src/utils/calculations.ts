@@ -76,7 +76,7 @@ export function computeAll(state: CalculatorState): ComputedValues {
   // 3. Revenue
   const revenueBerat = totalChargeableWeight * state.tariff.hargaPerKg;
   const revenueKoli = 0;
-  const totalRevenue = revenueBerat;
+  const grossRevenue = revenueBerat;
 
   // 4. Biaya operasional per leg
   const subtotalFirstMile = state.legs.firstMile.items.reduce((s, i) => s + i.biaya, 0);
@@ -86,12 +86,21 @@ export function computeAll(state: CalculatorState): ComputedValues {
 
   // 5. Biaya tambahan
   const totalExtraCost = state.extraCosts.reduce((s, i) => s + i.biaya, 0);
+  const totalCostBeforeDiscount = totalOpsCost + totalExtraCost;
+  const discountCostNominal = grossRevenue * (state.discountCostPct / 100);
+  const totalRevenue = Math.max(0, grossRevenue - discountCostNominal);
 
   // 6. Total cost & margin
-  const totalCost = totalOpsCost + totalExtraCost;
+  const totalCost = totalCostBeforeDiscount;
   const margin = totalRevenue - totalCost;
   const marginPct = totalRevenue > 0 ? (margin / totalRevenue) * 100 : 0;
   const marginStatus = getMarginStatus(marginPct);
+  const targetDiscountFor40 = Math.max(
+    0,
+    grossRevenue - totalCostBeforeDiscount / (1 - TARGET_MARGIN / 100)
+  );
+  const targetDiscountPctFor40 = grossRevenue > 0 ? (targetDiscountFor40 / grossRevenue) * 100 : 0;
+  const discountGapFor40 = Math.max(0, discountCostNominal - targetDiscountFor40);
 
   // 7. Saran pencapaian target 40%
   // Revenue minimum = totalCost / (1 - 0.40)
@@ -115,10 +124,15 @@ export function computeAll(state: CalculatorState): ComputedValues {
     subtotalLastMile,
     totalOpsCost,
     totalExtraCost,
+    totalCostBeforeDiscount,
+    discountCostNominal,
     totalCost,
     margin,
     marginPct,
     marginStatus,
+    targetDiscountFor40,
+    targetDiscountPctFor40,
+    discountGapFor40,
     minRevenueFor40,
     minHargaKgFor40,
     costReductionFor40,
